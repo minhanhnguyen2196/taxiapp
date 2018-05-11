@@ -15,7 +15,7 @@ const submitLogin = (values, dispatch, props) => {
 				password: sha256(String(values.password)),
 			}	
 		};
-		request.post('http://192.168.1.110:3000/api/login')
+		request.post('https://gettaxiapp.herokuapp.com/api/login')
 		.send(login)
 		.then((res) => {
 			console.log(res.body);
@@ -29,13 +29,11 @@ const submitLogin = (values, dispatch, props) => {
 				{ cancelable: false }
 			);
 				return Promise.reject(new Error('Fail!'));
-			}
-		})
-		.then(() => {
-			saveAccessToken(sha256(String(values.password)));
+			} 
+			saveAccessToken(res.body.token);
 			dispatch({
 				type: 'STORE_USER_INFO',
-				payload: login.data
+				payload: res.body.userInfo
 			});
 		})
 		.then(() => {

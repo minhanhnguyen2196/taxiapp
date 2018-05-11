@@ -6,6 +6,7 @@ import HeaderComponent from '../Header/Header';
 import MapTrack from './MapTrack';
 import DriverProfile from './DriverProfile/DriverProfile';
 import TripTracker from './TripTracker/TripTracker';
+import DriverRating from './DriverRating/DriverRating';
 import { FoundDriverScreen } from './FoundDriverScreen/FoundDriverScreen';
 
 
@@ -25,19 +26,14 @@ class TrackDriverContainer extends React.Component {
 		this.props.getDriverInfo();
 	}
 
-	componentWillReceiveProps(nextProps) {
-		if (this.props.driverLocation && nextProps.driverLocation !== this.props.driverLocation) {
-			this.props.getDistanceFromDriver();
-		}
-	}
 
 	componentDidUpdate(prevProps, prevState) {
 		//console.log(this.props.driverInfo);
-		console.log(this.props.driverLocation);
-		console.log(this.props.distanceFromDriver);
+		//console.log(this.props.driverLocation);
+		//console.log(this.props.distanceFromDriver);
 	}
 	render() {
-		const { region, driverInfo, driverLocation, distanceFromDriver } = this.props;
+		const { region, driverInfo, driverLocation, distanceFromDriver, booking } = this.props;
 		return (
 		<Container>
 			<HeaderComponent navigation={this.props.navigation} />
@@ -54,6 +50,9 @@ class TrackDriverContainer extends React.Component {
 						driverInfo={driverInfo}
 						getDriverLocation={this.props.getDriverLocation}
 					/>
+			}
+			{
+				booking.status === 'ended' && <DriverRating />
 			}
 			
 		</Container>

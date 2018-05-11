@@ -7,7 +7,7 @@ import * as Animatable from 'react-native-animatable';
 import styles from './styles';
 import { setCurrentAddress } from '../../redux/actionCreators'; 
 
-class PlacePickerBox extends React.PureComponent {
+class PlacePickerBox extends React.Component {
 	handleOnPress = () => {
 		this.props.setCurrentAddress();
 	    this.props.navigation.navigate('Home');
@@ -18,7 +18,7 @@ class PlacePickerBox extends React.PureComponent {
 			animation='fadeInDown' iterationCount={1}
 			style={styles.container}
 		>
-			<Text style={styles.label}>WELCOME TO THE TAXIAPP</Text>
+			<Text style={styles.label}>Welcome</Text>
 			<TouchableOpacity 
 				onPress={() => this.handleOnPress()}
 				style={styles.btn}

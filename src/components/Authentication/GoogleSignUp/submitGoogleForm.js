@@ -17,7 +17,7 @@ const submitGoogleForm = (values, dispatch, props) => {
 				phone: values.phone_number
 			}	
 		};
-		request.post('http://192.168.1.110:3000/api/register')
+		request.post('https://gettaxiapp.herokuapp.com/api/register')
 		.send(register)
 		.then((res) => {
 			console.log(res.body);

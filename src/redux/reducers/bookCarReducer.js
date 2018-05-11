@@ -8,6 +8,9 @@ const bookCarReducer = (state = booking, action) => {
 	if (action.type === 'UPDATE_BOOKING') {
 		return action.payload;
 	}
+	if (action.type === 'CLEAR_STATE') {
+		return { status: null };
+	}
  return state; 	
 };
 

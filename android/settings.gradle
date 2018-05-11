@@ -1,4 +1,9 @@
 rootProject.name = 'TaxiApp'
+include ':react-native-gps-state'
+project(':react-native-gps-state').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-gps-state/android')
+
+include ':react-native-android-location-services-dialog-box'
+project(':react-native-android-location-services-dialog-box').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-android-location-services-dialog-box/android')
 
 include ':app'
 include ':react-native-spinkit'
@@ -20,3 +25,6 @@ project(':react-native-vector-icons').projectDir = new File(rootProject.projectD
 
 include ':react-native-geocoder', ':app'
 project(':react-native-geocoder').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-geocoder/android')
+
+include ':react-native-sms-android'
+project(':react-native-sms-android').projectDir = new File(settingsDir, '../node_modules/react-native-sms-android/android')

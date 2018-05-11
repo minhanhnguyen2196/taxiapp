@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var mongojs = require('mongojs');
+var jwt = require('jsonwebtoken'); 
 
 var db = mongojs('mongodb://minhanh2296:plant3plant@ds247178.mlab.com:47178/taxiapp', ['users']);
 
@@ -22,15 +23,28 @@ router.post('/login', function (req, res) {
 			error: 'Bad data'
 		});	
 	} else {
-		db.users.count({ password: login.password, username: login.username }, (error, count) => {
+		db.users.findOne({ password: login.password, username: login.username }, (error, user) => {
 			if (error) {
 				res.json({ error: 'Error' });
 			}  
-			if (count !== 1) {
+			if (!user) {
 				res.json({ error: 'Incorrect username or password' });
-			} else res.json({ login: 'Success' });
+			} else {
+				var userInfo = {
+					username: user.username,
+					phone: user.phone
+				};
+				var token = jwt.sign(userInfo, 'secret', {
+					expiresIn: 60 * 60 
+				});
+				res.json({ 
+					login: 'Success',
+					token,
+					userInfo
+				});
+			}
 		});
-	}			
+	}	
 });
 
 

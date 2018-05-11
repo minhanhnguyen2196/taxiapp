@@ -1,8 +1,7 @@
 import React from 'react';
-import { Text, StyleSheet } from 'react-native';
-import { Button } from 'native-base';
+import { Text, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { connect } from 'react-redux';
-import { bookCar, removeChosenDriver } from '../../redux/actionCreators';
+import { bookCar, updateTripStatus } from '../../redux/actionCreators';
 
 
 class BookingButton extends React.PureComponent {
@@ -13,63 +12,61 @@ class BookingButton extends React.PureComponent {
 
     booking() {
         this.props.bookCar();
-        var interval = setInterval(() => {
-            if (this.props.booking.status !== 'pending') clearInterval(interval);
-            this.props.removeChosenDriver();
-             this.props.bookCar();
-        }, 3000);
+        // var interval = setInterval(() => {
+        //     if (this.props.booking.status !== 'pending') clearInterval(interval);
+        //     if (this.props.nearbyDrivers.length > 0) {
+        //         this.props.bookCar();
+        //     } else {
+        //         this.props.updateTripStatus('no driver found');
+        //         clearInterval(interval);
+        //     }
+        // }, 30000);
     }
 	render() {
-		return (
-			<Button style={styles.buttonContainer} onPress={() => this.booking()}>
-				<Text style={styles.btnText}>Book</Text> 
-			</Button>
-		);
-	}
+        return (
+        <View style={styles.container} >
+            <TouchableOpacity 
+                style={styles.confirmBtn}
+                onPress={() => this.booking()}
+            >
+                <Text style={styles.confirmTxt}>Request Your Ride Now</Text>
+            </TouchableOpacity>
+        </View>
+
+    );
+    }
 }
 
 function mapStateToProps(state) {
 	return { 
 		fare: state.fare,
-        booking: state.booking
+        booking: state.booking,
+        nearbyDrivers: state.nearbyDriver
 	};
 }
 
-export default connect(mapStateToProps, { bookCar, removeChosenDriver })(BookingButton); 
+export default connect(mapStateToProps, { bookCar, updateTripStatus })(BookingButton); 
 
 const styles = StyleSheet.create({
-    buttonContainer: {
-        borderColor: '#fff',
-        borderWidth: 1,
-        height: 80,
-        width: 80,
-        borderRadius: 40,
+    container: {
         alignItems: 'center',
         justifyContent: 'center',
-        position: 'absolute',
-        bottom: 100,
-        right: 20,
-        shadowColor: '#000',
-        shadowOpacity: 0.8,
-        shadowRadius: 2,
-        shadowOffset: {
-            height: 1,
-            width: 0
-        },
-        backgroundColor: '#FF5E3A'
+        
     },
-    disabledState: {       
-        backgroundColor: '#D7D7D7',
+    confirmTxt: {
+        color: 'white', 
+        textAlign: 'center', 
+        padding: 10, 
+        borderRadius: 6, 
+        fontWeight: 'bold'
     },
-    activeState: {
-        backgroundColor: '#FF5E3A',
-    },
-    btnText: {
-        fontSize: 16,
-        color: '#fff',
-    },
-    amount: {
-        fontWeight: 'bold',
-        fontSize: 12
-    }    
+    confirmBtn: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 10,
+        margin: 10,
+        width: 300, 
+        height: 40, 
+        backgroundColor: 'black', 
+    }
 });

@@ -4,7 +4,7 @@ const calculateFare = (baseFare, costPerMinute, time, costPerKm, distance, surge
 	const pricePerKm = costPerKm * distanceInKm;
 	const pricePerMinute = costPerMinute * timeInMin;
 	const totalFare = (baseFare + pricePerKm + pricePerMinute) * surge;
-	return Math.round(totalFare);
+	return Math.round(totalFare / 1000);
 };
 
 export default calculateFare;

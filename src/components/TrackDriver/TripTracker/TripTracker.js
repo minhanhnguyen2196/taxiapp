@@ -12,7 +12,6 @@ const TripTracker = ({ driverInfo, distanceFromDriver }) => {
 		<View style={styles.footerContainer}>
 			<View style={styles.iconContainer}>
 				<Icon name="window-minimize" style={styles.icon} />
-				
 				<Text style={styles.onWayText}>Your driver is on the way</Text>
 				<Text style={styles.vehicleText}>{vehicle && vehicle.plateNumber} {vehicle && vehicle.model}</Text>
 			</View>

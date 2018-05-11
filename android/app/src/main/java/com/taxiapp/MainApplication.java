@@ -3,6 +3,8 @@ package com.taxiapp;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import br.com.dopaminamob.gpsstate.GPSStatePackage;
+import com.showlocationservicesdialogbox.LocationServicesDialogBoxPackage;
 import com.react.rnspinkit.RNSpinkitPackage;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import com.arttitude360.reactnative.rngoogleplaces.RNGooglePlacesPackage;
@@ -13,6 +15,7 @@ import com.facebook.soloader.SoLoader;
 import com.airbnb.android.react.maps.MapsPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.devfd.RNGeocoder.RNGeocoderPackage;
+import com.rhaker.reactnativesmsandroid.RNSmsAndroidPackage;
 
 
 
@@ -31,12 +34,15 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+          new GPSStatePackage(),
+          new LocationServicesDialogBoxPackage(),
           new RNSpinkitPackage(),
           new RNGoogleSigninPackage(),
           new RNGooglePlacesPackage(),
           new VectorIconsPackage(),
           new MapsPackage(),
-          new RNGeocoderPackage()
+          new RNGeocoderPackage(),
+          new RNSmsAndroidPackage()
       );
     }
 

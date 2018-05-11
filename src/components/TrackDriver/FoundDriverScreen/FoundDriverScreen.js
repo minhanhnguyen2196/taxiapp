@@ -5,8 +5,7 @@ import { View, Button } from 'native-base';
 import styles from './styles';
 
 export const FoundDriverScreen = ({ driverInfo, getDriverLocation }) => {
-	const { profilePic } = driverInfo;
-	const { vehicle } = driverInfo;
+	const { profilePic, vehicle } = driverInfo;
 	return (
 		<View style={styles.findDriverContainer}>
 			<View style={styles.content}>

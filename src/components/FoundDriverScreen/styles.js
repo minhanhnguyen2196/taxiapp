@@ -4,33 +4,28 @@ const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#34495e',
-        alignItems: 'center'
+        backgroundColor: '#fff',
+        alignItems: 'center',
     },
     text: {
-        color: 'white',
+        color: '#fff',
         fontSize: 16,
         margin: 10
     },
-    locationIcon: {
-        color: '#fff',
-        fontSize: 40,
-        marginTop: 15
-    },
     content: {
-        position: 'absolute',
         justifyContent: 'center',
         alignItems: 'center',
-        margin: 20
+        margin: 20,
+        flex: 1,
     },
     pickup: {
         width: width * 0.8,
         borderRadius: 7,
-        height: 40,
+        height: 50,
         backgroundColor: '#fff',
-        marginTop: 260,
-        justifyContent: 'center',
-        alignItems: 'center'
+        marginTop: 10,
+        alignItems: 'center',
+        flexDirection: 'row'
 
     },
     toArrow: {
@@ -41,11 +36,11 @@ const styles = StyleSheet.create({
     dropoff: {
         width: width * 0.8,
         borderRadius: 7,
-        height: 40,
+        height: 50,
         backgroundColor: '#fff',
         marginTop: 10,
-        justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        flexDirection: 'row'
 
     },
     cancelBtnWrapper: {
@@ -61,7 +56,7 @@ const styles = StyleSheet.create({
         borderRadius: 7,
         borderWidth: 1,
         borderColor: '#fff',
-        backgroundColor: 'transparent'
+        backgroundColor: 'black'
     },
     cancelBtnText: {
         color: '#fff',
@@ -71,8 +66,12 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 14,
         marginBottom: 15
-
-    }
+    },
+    locationIcon: {
+        color: 'black',
+        fontSize: 20,
+        margin: 10
+    },
 });
 
 export default styles;

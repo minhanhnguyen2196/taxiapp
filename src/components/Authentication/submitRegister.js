@@ -1,4 +1,5 @@
 import { Alert } from 'react-native';
+import SmsAndroid from 'react-native-sms-android';
 import request from '../.././utils/request';
 import saveAccessToken from './saveAccessToken';
 
@@ -17,7 +18,7 @@ const submit = (values, dispatch, props) => {
 				phone: values.phone_number
 			}	
 		};
-		request.post('http://192.168.1.110:3000/api/register')
+		request.post('https://gettaxiapp.herokuapp.com/api/register')
 		.send(register)
 		.then((res) => {
 			console.log(res.body);
@@ -32,20 +33,30 @@ const submit = (values, dispatch, props) => {
 			);
 				return Promise.reject(new Error('Fail!'));
 			}
-		})
-		.then(() => {
-			saveAccessToken(sha256(String(values.password)));
+			saveAccessToken(res.body.token);
 			dispatch({
 				type: 'STORE_USER_INFO',
-				payload: register.data
+				payload: res.body.user
 			});
 		})
 		.then(() => {
+			SmsAndroid.sms(
+				'0913710766', // phone number to send sms to
+				'Your validation code is 2311', // sms body
+				'sendDirect', // sendDirect or sendIndirect
+				(err, message) => {
+				if (err) {
+					console.log('error');
+				} else {
+					console.log(message); // callback message
+				}
+				}
+			);
 			Alert.alert(
-				'Thank you',
-				'Sign up successfully!',
+				'Thank you for registering',
+				'A validation code has been sent to you',
 				[
-					{ text: 'OK', onPress: () => props.navigation.navigate('App') } 
+					{ text: 'OK', onPress: () => props.navigation.navigate('ValidationCode') } 
 				],
 				{ cancelable: false }
 			);

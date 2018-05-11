@@ -1,6 +1,7 @@
 import { StackNavigator, SwitchNavigator, DrawerNavigator } from 'react-navigation';
 import CardStackStyleInterpolator from 'react-navigation/src/views/CardStack/CardStackStyleInterpolator';
 import Authentication from '../components/Authentication/Authentication';
+import ValidationCode from '../components/Authentication/ValidationCode';
 import GoogleSignUp from '../components/Authentication/GoogleSignUp/GoogleSignUp';
 import GoogleSignUpForm from '../components/Authentication/GoogleSignUp/GoogleSignUpForm';
 import AuthLoadingScreen from '../components/Authentication/AuthLoadingScreen';
@@ -13,6 +14,7 @@ import Test from '../components/Home/Test';
 import TrackDriverContainer from '../components/TrackDriver/TrackDriverContainer';
 import PaymentScreen from '../components/Menu/PaymentScreen/PaymentScreen';
 import PayWithCash from '../components/Menu/PaymentScreen/PayWithCash';
+import TripHistory from '../components/Menu/TripHistory/TripHistory';
 
 export const SideMenu = StackNavigator({
   InitialScreen,
@@ -37,25 +39,21 @@ export const AppStack = DrawerNavigator({
   TrackDriverContainer,
   Menu,
   PaymentScreen,
-  PayWithCash
+  PayWithCash,
+  TripHistory
 }, 
 {
   initialRouteName: 'InitialScreen',
   drawerPosition: 'left',
-  drawerWidth: 200,
+  drawerWidth: 230,
   contentComponent: Menu
 });
 
 export const AuthStack = StackNavigator({ 
-  Authentication: {
-  screen: Authentication,
-},
-  GoogleSignUp: {
-    screen: GoogleSignUp
-  },
-  SignUpForm: {
-    screen: GoogleSignUpForm
-  }
+  Authentication,
+  GoogleSignUp,
+  GoogleSignUpForm,
+  ValidationCode
 },
 {
    transitionConfig: () => ({

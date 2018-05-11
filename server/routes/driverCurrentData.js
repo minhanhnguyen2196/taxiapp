@@ -29,7 +29,7 @@ router.put('/driverLocationSocket/:id', (req, res) => {
 });
 
 // get nearby drivers
-router.get('/driverLocation', (req, res) => {
+router.get('/driverCurrentData', (req, res) => {
 	db.driverCurrentData.ensureIndex({ 'coordinate': '2dsphere' });
 	db.driverCurrentData.find({
         $and: [
@@ -45,7 +45,7 @@ router.get('/driverLocation', (req, res) => {
                 } 
             },
             {
-                status: { $eq: 'free' }
+                status: { $eq: 'available' }
             }
         ]	
 		}, (err, location) => {
@@ -58,25 +58,25 @@ router.get('/driverLocation', (req, res) => {
 });
 
 // track driver
-router.get('/driverLocation/:id', (req, res) => {
+router.get('/driverCurrentData/:id', (req, res) => {
 	var io = req.app.io;
     db.driverCurrentData.findOne({ socketId: req.params.id }, (err, location) => {
         if (err) {
             res.send(err);
         }
         res.send(location);
-        io.to(req.params.id).emit('trackDriver', location);
+        //io.emit('trackDriver', location);
     });
 });
 
 
-//Update Location by driver to user
-router.put('/driverLocation/:id', (req, res) => {
+//Update driver current location
+router.put('/driverCurrentLocation/:id', (req, res) => {
     var io = req.app.io;
-    var location = req.body;
-    var latitude = parseFloat(location.latitude);
-    var longitude = parseFloat(location.longitude);
-    if (!location) {
+    var currentData = req.body;
+    var latitude = parseFloat(currentData.latitude);
+    var longitude = parseFloat(currentData.longitude);
+    if (!currentData) {
         res.status(400);
         res.json({
             'error': 'Bad Data'
@@ -84,7 +84,6 @@ router.put('/driverLocation/:id', (req, res) => {
     } else {
         db.driverCurrentData.update({ _id: mongojs.ObjectId(req.params.id) }, { 
             $set: {
-        	//socketId: location.socketId,
         	coordinate: {
                 'type': 'Point',
         		coordinates: [
@@ -98,19 +97,35 @@ router.put('/driverLocation/:id', (req, res) => {
         }
         if (updated) {
             //Get updated location
-            db.driverCurrentData.findOne({ _id: mongojs.ObjectId(req.params.id) }, (error, updatedLocation) => {
+            db.driverCurrentData.findOne({ _id: mongojs.ObjectId(req.params.id) }, (error, updatedData) => {
                 if (error) {
                     res.send(error);
                 }
-                res.send(updatedLocation);
-                io.emit('action', {
-                    type: 'UPDATE_DRIVER_LOCATION',
-                    payload: updatedLocation
-                });
+                res.json(updatedData);
             });
         }
     });
     }
 });
 
+
+router.put('/driverCurrentStatus/:id', (req, res) => {
+    var io = req.app.io;
+    var currentData = req.body;
+    if (!currentData) {
+        res.status(400);
+        res.json({
+            'error': 'Bad Data'
+        });
+    } else {
+        db.driverCurrentData.update({ _id: mongojs.ObjectId(req.params.id) }, { 
+            $set: {
+            status: currentData.status
+        } }, (err, updated) => {
+        if (err) {
+            res.send(err);
+        } else res.json(updated);
+    });
+    }
+});
 module.exports = router;

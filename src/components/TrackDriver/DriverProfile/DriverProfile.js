@@ -19,7 +19,7 @@ const DriverProfile = ({ driverInfo }) => {
 					disabled={true}
 					maxStars={5}
 					rating={rating}
-					starColor="#FF5E3A"
+					starColor="yellow"
 				/>
 			</View>
 			<View style={styles.iconContainer} />

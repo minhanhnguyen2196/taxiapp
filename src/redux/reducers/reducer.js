@@ -9,7 +9,7 @@ import getDistanceMatrixReducer from './getDistanceMatrixReducer';
 import getFareReducer from './getFareReducer';
 import bookCarReducer from './bookCarReducer';
 import getNearbyDriverReducer from './getNearbyDriverReducer';
-import submitReducer from './submitReducer';
+import userInfoReducer from './userInfoReducer';
 import getDriverInfoReducer from './getDriverInfoReducer';
 import getDriverLocationReducer from './getDriverLocationReducer';
 import setCarTypeReducer from './setCarTypeReducer';
@@ -27,7 +27,7 @@ const rootReducer = combineReducers({
 	booking: bookCarReducer,
 	nearbyDriver: getNearbyDriverReducer,
 	form: formReducer,
-	userInfo: submitReducer,
+	userInfo: userInfoReducer,
 	driverInfo: getDriverInfoReducer,
 	carType: setCarTypeReducer,
 	distanceFromDriver: getDistanceFromDriverReducer,

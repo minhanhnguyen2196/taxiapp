@@ -6,7 +6,6 @@ const currentLocation = {
  };
 const currentLocationReducer = (state = currentLocation, action) => {
   if (action.type === 'GET_CURRENT_LOCATION') {
-    console.log('OK');
     return {
         latitude: action.position.coords.latitude,
         longitude: action.position.coords.longitude,

@@ -7,8 +7,11 @@ import {
   View,
   Image
 } from 'react-native';
+import { connect } from 'react-redux';
 import getAccessToken from './getAccessToken';
-import getGoogleToken from './GoogleSignUp/getGoogleToken';
+import checkLogin from './checkLogin';
+
+import { getUserInfo } from '../../redux/actionCreators';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -16,7 +19,16 @@ class AuthLoadingScreen extends React.Component {
   componentDidMount() {
 	sleep(1000)
 	.then(() => getAccessToken())
-	.then(res => this.props.navigation.navigate(res ? 'App' : 'Auth'));
+	.then((token) => checkLogin(token))
+  .then((res) => {
+    if (res.error) {
+      this.props.navigation.navigate('Auth');
+    } else {
+      this.props.getUserInfo(res);
+      this.props.navigation.navigate('App');
+    }
+  })
+  .catch(err => console.log(err));
 	//this._signOutAsync();
   }
 
@@ -36,8 +48,6 @@ class AuthLoadingScreen extends React.Component {
   }
 }
 
-export default AuthLoadingScreen;
-
 const styles = StyleSheet.create({
 	container: {
     flex: 1,
@@ -49,3 +59,10 @@ const styles = StyleSheet.create({
     
   }
 });
+
+function mapStateToProps(state) {
+  return { 
+    userInfo: state.userInfo
+  };
+}
+export default connect(mapStateToProps, { getUserInfo })(AuthLoadingScreen);

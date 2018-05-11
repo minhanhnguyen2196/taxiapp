@@ -36,40 +36,42 @@ export const SearchBox =
 		toggleSearchResult(type);
 		getAddressPrediction();
 	}
-
+	
 	return (
 			<KeyboardAvoidingView behavior='padding' style={styles.searchBox}>
 				<Animatable.View 
 					animation='fadeInDown' iterationCount={1}
 					style={styles.inputWrapper}
 				>
-					<Text style={styles.label}>PICK UP</Text>
+					<Text style={styles.label}>Pick Up Location</Text>
 					<InputGroup>
 						<Icon name='search' size={15} color='#FF5E3A' />
 						<TextInput
 							onFocus={() => handleOnFocus('pickUp')}
 							style={styles.inputSearch} 
-							placeholder="Choose pick up location"
+							placeholder="Choose your pick up location"
 							onChangeText={(txt) => handleOnChangeText(txt, 'pickUp')}
 							ref={(input) => this.pickUpInput = input}
 							onEndEditing={() => {
-								clearText1();	
+								clearText1();
 							}}
 							defaultValue={selectedAddress.selectedPickUp.name}
 							underlineColorAndroid='transparent'
-							
+			
 						/>
 					</InputGroup>
-					<Text style={styles.label}>DROP OFF</Text>
+					<Text style={styles.label}>Drop Off Location</Text>
 					<InputGroup>
 						<Icon name='search' size={15} color='#FF5E3A' />
 						<TextInput 
 							style={styles.inputSearch} 
-							placeholder="Choose drop off location"
+							placeholder="Choose your destination"
 							onFocus={() => handleOnFocus('dropOff')}
 							onChangeText={(txt) => handleOnChangeText(txt, 'dropOff')}
 							ref={(input) => this.dropOffInput = input}
-							onEndEditing={() => clearText2()} 
+							onEndEditing={() => {
+								clearText2();
+							}}
 							defaultValue={selectedAddress.selectedDropOff.name}
 							underlineColorAndroid='transparent'
 						/>

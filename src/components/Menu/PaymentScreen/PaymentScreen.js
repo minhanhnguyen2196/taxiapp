@@ -1,10 +1,19 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, BackHandler } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Icon as BackIcon } from 'native-base';
 import * as Animatable from 'react-native-animatable';
 
 export default class PaymentScreen extends React.PureComponent {
+	constructor(props) {
+		super(props);
+		BackHandler.addEventListener('hardwareBackPress', this.onBackHandle);
+	}
+
+	onBackHandle = () => {
+    this.props.navigation.navigate('Home');
+    return true;
+  }
 	render() {
 		return (
 			<View style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -13,7 +22,7 @@ export default class PaymentScreen extends React.PureComponent {
 						style={{ margin: 20 }}
 						animation='slideInLeft' iterationCount={1}
 					>
-						<TouchableOpacity onPress={() => this.props.navigation.goBack()}>
+						<TouchableOpacity onPress={() => this.props.navigation.navigate('Home')}>
 							<BackIcon name='md-arrow-back' style={{ color: 'white' }} />
 						</TouchableOpacity>
 					</Animatable.View>

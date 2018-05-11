@@ -22,8 +22,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center', 
         alignItems: 'flex-start',
         margin: 10,
-        width: 350,
-        height: 40,
+        width: width * 0.85,
+        height: height * 0.06,
         borderRadius: 6
     },
     viewWrapper: {
@@ -44,6 +44,8 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#fff',
         fontStyle: 'italic',
+        textAlign: 'center',
+        fontWeight: 'bold'
     },
     map: {
 		...StyleSheet.absoluteFillObject,

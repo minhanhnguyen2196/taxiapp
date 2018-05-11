@@ -1,82 +1,64 @@
 import React from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, 
+import { Text, StyleSheet, TouchableOpacity, 
 	KeyboardAvoidingView, Dimensions } from 'react-native';
 import { Field, reduxForm } from 'redux-form';
 import * as Animatable from 'react-native-animatable';
 import submitLogin from './login';
+import RenderInput from './RenderInput';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 
-const renderField = ({ label, keyboardType, secureTextEntry, returnKeyLabel, input: { onChange, ...resInput } }) => {
-	return (
-		<Animatable.View 
-			animation='zoomIn' iterationCount={1}
-			style={{ flexDirection: 'row', height: 58, alignItems: 'center', justifyContent: 'center' }}
-		>
-			<Text style={styles.label}>{label}</Text>
-			<TextInput 
-				style={styles.input}
-				keyboardType={keyboardType}
-				underlineColorAndroid='transparent'
-				secureTextEntry={secureTextEntry}
-				returnKeyLabel={returnKeyLabel}
-				onChangeText={onChange} {...resInput}
+class LoginComponent extends React.Component {
+	render() {
+		const { handleSubmit } = this.props;
+		return (
+		<KeyboardAvoidingView behavior='padding' style={styles.formContainer}>
+			<Animatable.Text 
+				animation='zoomIn' iterationCount={1}
+				style={styles.registerText}
+			> Sign In
+			</Animatable.Text>
+			<Field
+				focus
+				withRef
+				refField="username"
+				keyboardType='default'
+				placeholder='Username'
+				component={RenderInput}
+				name='username'
+				returnKeyLabel='Next'
+				onSubmit={() => this.password.getRenderedComponent().refs.password.focus()}
+				ref={(input) => this.username = input}
 			/>
-		</Animatable.View>
-	);
-};
-
-
-const LoginComponent = props => {
-	const { submitting, handleSubmit } = props;
-	console.log(`submitting=${submitting}`);
-	return (
-			<KeyboardAvoidingView behavior='padding' style={styles.formContainer}>
-				<Animatable.Text
-					animation='flipInX' iterationCount={1}
-					style={styles.registerText}
-				> SIGN IN
-				</Animatable.Text>
-				<Field 
-					keyboardType='default'
-					label='Username:'
-					component={renderField}
-					name='username'
-					returnKeyLabel='Next'
-				/>
-				<Field 
-					keyboardType='default'
-					label='Password:'
-					component={renderField}
-					name='password'
-					secureTextEntry
-					returnKeyLabel='Next'
-				/>
-				<Field 
-					keyboardType='default'
-					label='Re-Enter Password:'
-					component={renderField}
-					name='re-password'
-					secureTextEntry
-					returnKeyLabel='Next'
-				/>
-				<Animatable.View
-					animation='bounceIn' iterationCount={1}
-				>
-				<TouchableOpacity
-					style={styles.btnSubmit}
-					onPress={handleSubmit(submitLogin)}
-				>
-					<Text 
-						style={styles.txtStyle}
-					>	Sign In Now
-					</Text>
-				</TouchableOpacity>
-				</Animatable.View>
-			</KeyboardAvoidingView>
-  );
-};
+			<Field
+				withRef
+				refField="password"
+				keyboardType='default'
+				placeholder='Password'
+				component={RenderInput}
+				name='password'
+				secureTextEntry
+				returnKeyLabel='Next'
+				ref={(input) => this.password = input}
+			/>
+			<Animatable.View
+				animation='bounceIn' iterationCount={1}
+			>
+			<TouchableOpacity
+				onPress={handleSubmit(submitLogin)}
+				style={styles.btnSubmit}			
+			>
+				<Text 
+					style={styles.txtStyle}
+				>	Sign In Now
+				</Text>
+			</TouchableOpacity>
+			</Animatable.View>
+		</KeyboardAvoidingView>
+);
+	}
+}
 
 const LoginForm = reduxForm({
   // a unique name for the form
@@ -101,8 +83,7 @@ const styles = StyleSheet.create({
 		height: 200
 	},
 	formContainer: {
-		margin: 20,
-		paddingLeft: 10,
+		margin: 10,
 		alignItems: 'center',
 		justifyContent: 'center',
 	},

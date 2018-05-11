@@ -1,10 +1,20 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, BackHandler } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Icon as BackIcon } from 'native-base';
 import * as Animatable from 'react-native-animatable';
 
 export default class PayWithCash extends React.PureComponent {
+	constructor(props) {
+		super(props);
+		BackHandler.addEventListener('hardwareBackPress', this.onBackHandle);
+	}
+
+	onBackHandle = () => {
+    this.props.navigation.goBack();
+    return true;
+}
+
 	render() {
 		return (
 			<View style={{ flex: 1, backgroundColor: '#fff' }}>

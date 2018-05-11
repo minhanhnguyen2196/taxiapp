@@ -39,7 +39,7 @@ class Authentication extends React.PureComponent {
 						</Text>
 					</TouchableOpacity>
 				</View>
-				<View style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 30 }}> 
+				<View style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 5 }}> 
 					<TouchableOpacity 
 						style={styles.wrapperSignUp} 
 						onPress={() => this.props.navigation.navigate('GoogleSignUp')} 
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: '#2c3e50',
-		padding: 20,
+		padding: 10,
 	},
 	btnSignIn: {
 		alignItems: 'center',

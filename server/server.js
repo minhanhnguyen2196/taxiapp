@@ -4,15 +4,19 @@ var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
 var bookings = require('./routes/bookings');
-var driverLocationSocket = require('./routes/driverLocation');
-var driverLocation = require('./routes/driverLocation');
+var driverLocationSocket = require('./routes/driverCurrentData');
+var driverCurrentData = require('./routes/driverCurrentData');
+var driverCurrentLocation = require('./routes/driverCurrentData');
+var driverCurrentStatus = require('./routes/driverCurrentData');
 var register = require('./routes/register');
 var login = require('./routes/login');
 var driver = require('./routes/driver');
+var user = require('./routes/users');
+var auth = require('./routes/auth');
 
 var app = express();
 
-var port = 3000;
+var port = process.env.PORT || 3000;
 var server = require('http').Server(app);
 var io = require('socket.io')(server, { pingTimeout: 30000, pingInterval: 30000 });
 
@@ -20,18 +24,24 @@ server.listen(port);
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+app.set('superSecret', 'jsonwebtoken'); 
+
 app.engine('html', require('ejs').renderFile);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/', index);
+app.use('/api', auth);
 app.use('/api', bookings);
 app.use('/api', driverLocationSocket);
-app.use('/api', driverLocation);
+app.use('/api', driverCurrentData);
+app.use('/api', driverCurrentLocation);
+app.use('/api', driverCurrentStatus);
 app.use('/api', register);
 app.use('/api', login);
 app.use('/api', driver);
+app.use('/api', user);
 
 app.io = io.on('connection', (socket) => {
 	console.log('User is connected: ' + socket.id);
@@ -39,6 +49,12 @@ app.io = io.on('connection', (socket) => {
 	socket.on('hello', (data) => {
 		socket.emit('hello driver', 'hello again');
 		console.log(data);
+	});
+	socket.on('room', (userSocketID) => {
+		socket.join(userSocketID);
+	});
+	socket.on('left room', (userSocketID) => {
+		socket.leave(userSocketID);
 	});
 });
 

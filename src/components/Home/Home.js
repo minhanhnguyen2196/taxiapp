@@ -8,10 +8,12 @@ import BookingButton from '../Button/BookingButton';
 import CancelButton from '../Button/CancelButton';
 import FoundDriverScreen from '../FoundDriverScreen/FoundDriverScreen';
 import RideTypeWindow from '../RideTypeWindow/RideTypeWindow';
+import EstimatedFareWindow from '../RideTypeWindow/EstimatedFareWindow';
+import ConfirmButton from '../Button/ConfirmButton';
 import styles from './styles';
 
 import { getCurrentLocation, getInput, toggleSearchResult, getAddressPrediction, 
-		getNearbyDrivers, setCurrentAddress, clearStates
+		getNearbyDrivers, setCurrentAddress, clearStates, calculateFares
 	} 
 		from '../../redux/actionCreators';
 
@@ -22,14 +24,15 @@ class Home extends React.PureComponent {
 		BackHandler.addEventListener('hardwareBackPress', this.onBackHandle);
 	}
 	
-	componentDidMount() {
-		setTimeout(() => {
-			this.props.getNearbyDrivers();
-		}, 1000);
+	componentWillReceiveProps(nextProps) {
+		if (this.props.selectedAddress.selectedPickUp !== nextProps.selectedAddress.selectedPickUp 
+			&& Object.keys(nextProps.selectedAddress.selectedPickUp).length > 0) {
+				this.props.getNearbyDrivers();
+			}
 	}
 
 	componentDidUpdate(prevProps, prevState) {
-		//console.log(this.props.nearbyDriver);
+		console.log(this.props.booking);
 		if (this.props.booking.status === 'confirmed') {
 			this.props.navigation.navigate('TrackDriverContainer');
 		}
@@ -43,7 +46,7 @@ class Home extends React.PureComponent {
 	}
 
 	render() {
-	const { region, booking, selectedAddress, carType } = this.props;
+	const { region, booking, selectedAddress, carType, fare } = this.props;
 	const { selectedPickUp, selectedDropOff } = selectedAddress;
 	const { status } = booking || {};
 		return (
@@ -52,34 +55,21 @@ class Home extends React.PureComponent {
 			(
 			<View style={{ flex: 1 }}>
 				{
-					(selectedPickUp.latitude && selectedDropOff.latitude) ? null :
+					(selectedPickUp.latitude && selectedDropOff.latitude && !carType) ? null :
 						<HeaderComponent navigation={this.props.navigation} />
 				}
 				
-				<MapContainer 
-					region={region} 
-					getInput={this.props.getInput} 
-					toggleSearchResult={this.props.toggleSearchResult}
-					getAddressPrediction={this.props.getAddressPrediction}
-					resultTypes={this.props.resultTypes}
-					prediction={this.props.prediction}
-					selectedAddress={this.props.selectedAddress}
-					nearbyDriver={this.props.nearbyDriver}
-					setCurrentAddress={this.props.setCurrentAddress}
-					navigation={this.props.navigation}
-					carType={carType}
-				/>
-
+				<MapContainer />
 				{
-					(selectedPickUp.latitude && selectedDropOff.latitude && !carType) && <RideTypeWindow />
+					(selectedPickUp.latitude && selectedDropOff.latitude && !fare.economyTotalFare) && 
+					<ConfirmButton calculateFares={this.props.calculateFares} />
 				}
 				{
-					carType && <BookingButton />
+					(!carType && fare.economyTotalFare) && <RideTypeWindow navigation={this.props.navigation} />
 				}
 				{
-					carType && <CancelButton />
+					carType && <EstimatedFareWindow />
 				}
-
 				
 			</View>
 			) : <FoundDriverScreen />
@@ -102,7 +92,6 @@ function mapStateToProps(state) {
 		fare: state.fare,
 		booking: state.booking,
 		nearbyDriver: state.nearbyDriver,
-		clicked: state.clicked,
 		userInfo: state.userInfo,
 		carType: state.carType
 	};
@@ -115,5 +104,20 @@ export default connect(mapStateToProps, {
 	getAddressPrediction,
 	getNearbyDrivers,
 	setCurrentAddress,
-	clearStates
+	clearStates,
+	calculateFares
 	})(Home);
+
+
+// region={region} 
+// 					getInput={this.props.getInput} 
+// 					toggleSearchResult={this.props.toggleSearchResult}
+// 					getAddressPrediction={this.props.getAddressPrediction}
+// 					resultTypes={this.props.resultTypes}
+// 					prediction={this.props.prediction}
+// 					selectedAddress={this.props.selectedAddress}
+// 					nearbyDriver={this.props.nearbyDriver}
+// 					setCurrentAddress={this.props.setCurrentAddress}
+// 					navigation={this.props.navigation}
+// 					carType={carType}
+// 					getNearbyDrivers={this.props.getNearbyDrivers}

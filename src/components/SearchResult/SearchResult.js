@@ -15,14 +15,23 @@ class SearchResult extends React.PureComponent {
     handleSelectedAddress = (placeID) => {
         this.props.getSelectedAddress(placeID);
     }
+
 	render() {
 		return (
-			<View style={styles.searchResultsWrapper}>
+			<View
+				animation='slideInUp' iterationCount={1}
+				style={styles.searchResultsWrapper}
+			>
 				<List
 					dataArray={this.props.prediction}
 					renderRow={(item) => 
 						<View>
-							<ListItem onPress={() => this.handleSelectedAddress(item.placeID)} button avatar>
+							<ListItem 
+								onPress={() => {
+								this.handleSelectedAddress(item.placeID);
+								}} 
+								button avatar
+							>
 								<Left style={styles.leftContainer}>
 								<Icon style={styles.leftIcon} name='location-on' />
 								</Left>
@@ -31,7 +40,7 @@ class SearchResult extends React.PureComponent {
 										{item.primaryText}
 									</Text>
 									<Text style={styles.secondaryText}> 
-										{item.primaryText}
+										{item.secondaryText}
 									</Text>
 								</Body>
 							</ListItem>
