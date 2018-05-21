@@ -1,6 +1,7 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, AppState } from 'react-native';
 import { connect } from 'react-redux';
+import PushNotification from 'react-native-push-notification';
 import { Container } from 'native-base';
 import HeaderComponent from '../Header/Header';
 import MapTrack from './MapTrack';
@@ -14,26 +15,45 @@ import { getCurrentLocation, getNearbyDrivers, getDriverInfo,
 		getDriverLocation, getDistanceFromDriver } from '../../redux/actionCreators';
 
 class TrackDriverContainer extends React.Component {
+	constructor(props) {
+	  super(props);
+	
+	  this.handle = this.handle.bind(this);
+	}
 	componentDidMount() {
 		navigator.geolocation.getCurrentPosition(
 			(position) => {
-				this.props.getCurrentLocation(position);
+			this.props.getCurrentLocation(position);
 		},
 		(error) => console.log(JSON.stringify(error)),
-		{ enableHighAccuracy: true, timeout: 20000 }
+		{ enableHighAccuracy: false, timeout: 20000 }
 		);
 
 		this.props.getDriverInfo();
+		AppState.addEventListener('change', this.handle);
+		PushNotification.configure({
+		onNotification: (notification) => {
+		console.log('NOTIFICATION:', notification);
+		},
+		});
 	}
 
-
-	componentDidUpdate(prevProps, prevState) {
-		//console.log(this.props.driverInfo);
-		//console.log(this.props.driverLocation);
-		//console.log(this.props.distanceFromDriver);
+	componentWillUnmount() {
+		AppState.removeEventListener('change', this.handle);
 	}
+
+	handle(appState) {
+	if (appState === 'background' && this.props.distanceFromDriver) {
+		const duration = this.props.distanceFromDriver.rows[0].elements[0].duration.text;
+		PushNotification.localNotificationSchedule({
+			message: "Your driver will be arrived in" + " " + duration, 
+			date: new Date(Date.now() + (2 * 1000)) 
+		});
+	}
+	}
+
 	render() {
-		const { region, driverInfo, driverLocation, distanceFromDriver, booking } = this.props;
+		const { region, driverInfo, driverLocation, booking, distanceFromDriver } = this.props;
 		return (
 		<Container>
 			<HeaderComponent navigation={this.props.navigation} />
@@ -41,8 +61,10 @@ class TrackDriverContainer extends React.Component {
 				region.latitude &&
 				<MapTrack />
 			}
-
-			<TripTracker driverInfo={driverInfo} distanceFromDriver={distanceFromDriver} />
+			{
+				distanceFromDriver && <TripTracker driverInfo={driverInfo} distanceFromDriver={distanceFromDriver} />
+			}
+			
 			<DriverProfile driverInfo={driverInfo} getDriverLocation={this.props.getDriverLocation} />
 			{
 				driverLocation.showFoundDriver && 
@@ -52,7 +74,7 @@ class TrackDriverContainer extends React.Component {
 					/>
 			}
 			{
-				booking.status === 'ended' && <DriverRating />
+				booking.status === 'completed' && <DriverRating />
 			}
 			
 		</Container>

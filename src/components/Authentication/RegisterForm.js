@@ -1,7 +1,9 @@
 import React from 'react';
 import { Text, StyleSheet, 
-		KeyboardAvoidingView, TouchableOpacity } from 'react-native';
+		KeyboardAvoidingView, TouchableOpacity, View } from 'react-native';
 import { Field, reduxForm } from 'redux-form';
+import { Icon } from 'native-base';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import * as Animatable from 'react-native-animatable';
 import submit from './submitRegister';
 import RenderInput from './RenderInput';
@@ -10,13 +12,10 @@ import RenderInput from './RenderInput';
 const required = value => value ? undefined : 'Required';
 
 const maxLength = max => value =>
-value && value.length > max ? `Must be ${max} characters or less` : undefined;
+value && value.length > max ? `Must be ${max} characters or less` : 'undefined';
 
 const minLength = min => value =>
-value && value.length < min ? `Must be ${min} characters or more` : undefined;
-
-const number = value =>
-value && isNaN(Number(value)) ? 'Must be a number' : undefined;
+value && value.length < min ? `Must be ${min} characters or more` : 'undefined';
 
 const email = value =>
 value && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value)
@@ -33,50 +32,69 @@ class RegisterComponent extends React.Component {
 		const { handleSubmit } = this.props;
 		return (
 		<KeyboardAvoidingView behavior='padding' style={styles.formContainer}>
+			<Animatable.View 
+				style={{ paddingRight: 300 }}
+				animation='slideInLeft' iterationCount={1}
+			>
+				<TouchableOpacity onPress={() => this.props.navigation.goBack()}>
+					<Icon name='md-arrow-back' style={{ color: 'black' }} />
+				</TouchableOpacity>
+			</Animatable.View>
 			<Animatable.Text 
 				animation='zoomIn' iterationCount={1}
 				style={styles.registerText}
-			> Sign Up 
+			> Create Your Account
 			</Animatable.Text>
-			<Field
-				focus
-				withRef
-				refField="username"
-				keyboardType='default'
-				placeholder='Username'
-				component={RenderInput}
-				name='username'
-				returnKeyLabel='Next'
-				validate={[required, minLength(6), maxLength(20)]}
-				onSubmit={() => this.email.getRenderedComponent().refs.email.focus()}
-				ref={(input) => this.username = input}
-			/>
-			<Field
-				withRef
-				refField="email"
-				keyboardType='email-address'
-				placeholder='Email'
-				component={RenderInput}
-				name='email'
-				returnKeyLabel='Next'
-				validate={[required, email]}
-				ref={(input) => this.email = input}
-				onSubmit={() => this.password.getRenderedComponent().refs.password.focus()}
-			/>
-			<Field
-				withRef
-				refField="password"
-				keyboardType='default'
-				placeholder='Password'
-				component={RenderInput}
-				name='password'
-				secureTextEntry
-				returnKeyLabel='Next'
-				validate={[required, minLength(5)]}
-				ref={(input) => this.password = input}
-				onSubmit={() => this.phone.getRenderedComponent().refs.phone.focus()}
-								
-			/>
+			<View style={styles.userInput}>
+				<FontAwesome style={{ padding: 10 }} name="user" size={16} color="#000" />
+				<Field
+					focus
+					withRef
+					refField="username"
+					keyboardType='default'
+					placeholder='Username'
+					component={RenderInput}
+					name='username'
+					returnKeyLabel='Next'
+					validate={[required, minLength(6), maxLength(20)]}
+					onSubmit={() => this.email.getRenderedComponent().refs.email.focus()}
+					ref={(input) => this.username = input}
+				/>
+			</View>
+			<View style={styles.userInput}>
+				<FontAwesome style={{ padding: 10 }} name="envelope" size={16} color="#000" />
+				<Field
+					withRef
+					refField="email"
+					keyboardType='email-address'
+					placeholder='Email'
+					component={RenderInput}
+					name='email'
+					returnKeyLabel='Next'
+					validate={[required, email]}
+					ref={(input) => this.email = input}
+					onSubmit={() => this.password.getRenderedComponent().refs.password.focus()}
+				/>
+			</View>
+			<View style={styles.userInput}>
+				<FontAwesome style={{ padding: 10 }} name="key" size={16} color="#000" />
+				<Field
+					withRef
+					refField="password"
+					keyboardType='default'
+					placeholder='Password'
+					component={RenderInput}
+					name='password'
+					secureTextEntry
+					returnKeyLabel='Next'
+					validate={[required, minLength(5)]}
+					ref={(input) => this.password = input}
+					onSubmit={() => this.phone.getRenderedComponent().refs.phone.focus()}
+									
+				/>
+			</View>
+			<View style={styles.userInput}>
+			<FontAwesome style={{ padding: 10 }} name="phone" size={16} color="#000" />
 			<Field
 				withRef
 				refField="phone"
@@ -85,9 +103,10 @@ class RegisterComponent extends React.Component {
 				component={RenderInput}
 				name='phone_number'
 				returnKeyLabel='Go'
-				validate={[required, phoneNumber, number]}
+				validate={[required, phoneNumber]}
 				ref={(input) => this.phone = input}
 			/>
+			</View>
 			<Animatable.View
 				animation='bounceIn' iterationCount={1}
 			>
@@ -115,34 +134,17 @@ const RegisterForm = reduxForm({
 export default RegisterForm;
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1, 
-		justifyContent: 'center', 
-		backgroundColor: '#2c3e50',
-		alignItems: 'center'
-
-	},
-	logoContainer: {
-		alignItems: 'center',
-		flexGrow: 1,
-		marginTop: 5,	
-	},
-	logo: {
-		width: 400,
-		height: 200
-	},
 	formContainer: {
-		margin: 10,
 		alignItems: 'center',
 		justifyContent: 'center',
 
 	},
 	registerText: {
 		textAlign: 'center', 
-		fontSize: 19, 
+		fontSize: 20, 
 		fontWeight: 'bold', 
 		margin: 10, 
-		color: 'white'
+		color: 'steelblue'
 	},
 	input: {
 		borderColor: 'white',  
@@ -195,6 +197,12 @@ const styles = StyleSheet.create({
 		fontSize: 12, 	
 		fontWeight: 'bold',
 		textAlign: 'center',
+	},
+	userInput: {
+	flexDirection: 'row',
+	justifyContent: 'center',
+	alignItems: 'center',
+
 	}
 
 

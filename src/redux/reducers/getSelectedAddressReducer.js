@@ -4,7 +4,7 @@ const selectedAddress = {
 	
  }; 
 const getSelectedAddressReducer = (state = selectedAddress, action) => {
-	const selected = action.selectedType ? 'selectedPickUp' : 'selectedDropOff';
+	const selected = (action.selectedType) ? 'selectedPickUp' : 'selectedDropOff';
 	if (action.type === 'GET_SELECTED_ADDRESS') {
 		if (selected === 'selectedPickUp') {
 			return { ...state, selectedPickUp: action.payload };

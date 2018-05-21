@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import Home from './Home/Home';
 import FoundDriverScreen from './FoundDriverScreen/FoundDriverScreen';
-import AnimatedMarkers from './Home/Test';
+import Test from './Home/Test';
 import ValidationCode from './Authentication/ValidationCode';
-import GoogleSignUpForm from './Authentication/GoogleSignUp/GoogleSignUpForm';
+import StartScreen from './Authentication/StartScreen';
 import { App, AppStack, AuthStack } from '../utils/navigator';
 import Menu from './Menu/Menu';
+import PaymentScreen from './Menu/PaymentScreen/PaymentScreen';
 import TripHistory from './Menu/TripHistory/TripHistory';
 import RideTypeWindow from './RideTypeWindow/RideTypeWindow';
 import DriverProfile from './TrackDriver/DriverProfile/DriverProfile';

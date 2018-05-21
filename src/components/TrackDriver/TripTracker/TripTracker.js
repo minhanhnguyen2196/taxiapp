@@ -5,20 +5,20 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 import styles from './styles.js';
 
-const TripTracker = ({ driverInfo, distanceFromDriver }) => {
-	const { vehicle } = driverInfo;
-	//const { duration } = distanceFromDriver.rows[0].elements[0];
-	return (
+export default class TripTracker extends React.Component {
+	
+	render() {
+		const { vehicle } = this.props.driverInfo;
+		const { duration } = this.props.distanceFromDriver.rows[0].elements[0];
+		return (
 		<View style={styles.footerContainer}>
 			<View style={styles.iconContainer}>
 				<Icon name="window-minimize" style={styles.icon} />
-				<Text style={styles.onWayText}>Your driver is on the way</Text>
+				<Text style={styles.onWayText}>{(duration.value < 100) ? '' : 'Your driver is on the way'}</Text>
+				<Text style={styles.distanceText}>{(duration.value < 100) ? 'Your driver has arrived!!!' : duration.text}</Text>
 				<Text style={styles.vehicleText}>{vehicle && vehicle.plateNumber} {vehicle && vehicle.model}</Text>
 			</View>
 		</View>
 	);
-};
-
-export default TripTracker;
-
-//<Text style={styles.distanceText}>{(duration.value < 100) ? 'Your driver has arrived' : duration.text}</Text>
+	}	
+}

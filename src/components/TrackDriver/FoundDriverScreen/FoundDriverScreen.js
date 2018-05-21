@@ -29,8 +29,15 @@ export const FoundDriverScreen = ({ driverInfo, getDriverLocation }) => {
 				<View style={styles.vehicleDetails}>
 					<Text style={styles.vehicleText}>Vehicle Plate number:</Text>
 					<Text style={styles.vehicleNumber}> {vehicle && vehicle.plateNumber}</Text>
-					<Button style={styles.nextBtn} onPress={() => getDriverLocation()}>
-						<Text style={styles.nextBtnText}>Next</Text>
+					<Button 
+						style={styles.nextBtn} 
+						onPress={() => {
+						setInterval(() => {
+						 	getDriverLocation();
+						 }, 1000);
+					}}
+					>
+						<Text style={styles.nextBtnText}>OK</Text>
 					</Button>
 				</View>
 			</View>

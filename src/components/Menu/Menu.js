@@ -46,7 +46,7 @@ class Menu extends Component {
               borderBottomWidth: StyleSheet.hairlineWidth,
               borderBottomColor: 'black',
               width,
-              margin: 5
+              marginTop: 5
             }}
           />
         </View>
@@ -63,7 +63,7 @@ class Menu extends Component {
                   borderBottomWidth: StyleSheet.hairlineWidth,
                   borderBottomColor: 'black',
                   width,
-                  margin: 5
+                  marginTop: 5
                 }}
               />
           </View>

@@ -13,6 +13,7 @@ import userInfoReducer from './userInfoReducer';
 import getDriverInfoReducer from './getDriverInfoReducer';
 import getDriverLocationReducer from './getDriverLocationReducer';
 import setCarTypeReducer from './setCarTypeReducer';
+import setPaymentReducer from './setPaymentReducer';
 import getDistanceFromDriverReducer from './getDistanceFromDriverReducer';
 
 
@@ -31,6 +32,7 @@ const rootReducer = combineReducers({
 	driverInfo: getDriverInfoReducer,
 	carType: setCarTypeReducer,
 	distanceFromDriver: getDistanceFromDriverReducer,
-	driverLocation: getDriverLocationReducer
+	driverLocation: getDriverLocationReducer,
+	payment: setPaymentReducer
 });
 export default rootReducer;

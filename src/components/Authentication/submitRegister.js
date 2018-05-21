@@ -9,7 +9,6 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const submit = (values, dispatch, props) => {
 	return sleep(1000).then(() => {
-		console.log('OK');
 		const register = {
 			data: {
 				username: values.username,

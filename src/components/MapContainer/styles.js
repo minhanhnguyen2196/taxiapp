@@ -3,6 +3,8 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center' 
 	},
 	map: {
 		...StyleSheet.absoluteFillObject
@@ -10,7 +12,8 @@ const styles = StyleSheet.create({
 	talkBubble: {
     	backgroundColor: 'transparent',
     	justifyContent: 'center',
-    	alignItems: 'center' 
+    	alignItems: 'center',
+    	paddingBottom: 40
   	},
  	 talkBubbleSquare: {
 	    width: 90,
@@ -34,7 +37,18 @@ const styles = StyleSheet.create({
 	      transform: [
 	      {rotate: '180deg'}
 	    ]
-  	}
+  	},
+  	marker: {
+    height: 48,
+    width: 48
+  },
+    markerFixed: {
+    left: '50%',
+    marginLeft: -24,
+    marginTop: -48,
+    position: 'absolute',
+    top: '50%'
+  }
 });
 
 export default styles;

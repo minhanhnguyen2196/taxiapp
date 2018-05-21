@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
         width,
         backgroundColor: '#fff',
         position: 'absolute',
-        top: 171,
+        top: 160,
     },
     primaryText: {
         fontWeight: 'bold',
@@ -19,9 +19,8 @@ const styles = StyleSheet.create({
         color: '#7D7D7D',
     },
     leftContainer: {
-        flexWrap: 'wrap',
         alignItems: 'flex-start',
-        borderLeftColor: '#7D7D7D',
+        flexDirection: 'column' 
     },
     leftIcon: {
         fontSize: 20,

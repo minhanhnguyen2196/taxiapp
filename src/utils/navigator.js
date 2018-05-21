@@ -1,6 +1,9 @@
 import { StackNavigator, SwitchNavigator, DrawerNavigator } from 'react-navigation';
 import CardStackStyleInterpolator from 'react-navigation/src/views/CardStack/CardStackStyleInterpolator';
 import Authentication from '../components/Authentication/Authentication';
+import RegisterForm from '../components/Authentication/RegisterForm';
+import LoginForm from '../components/Authentication/LoginForm';
+import StartScreen from '../components/Authentication/StartScreen';
 import ValidationCode from '../components/Authentication/ValidationCode';
 import GoogleSignUp from '../components/Authentication/GoogleSignUp/GoogleSignUp';
 import GoogleSignUpForm from '../components/Authentication/GoogleSignUp/GoogleSignUpForm';
@@ -49,8 +52,11 @@ export const AppStack = DrawerNavigator({
   contentComponent: Menu
 });
 
-export const AuthStack = StackNavigator({ 
+export const AuthStack = StackNavigator({
+  StartScreen,
   Authentication,
+  RegisterForm,
+  LoginForm,
   GoogleSignUp,
   GoogleSignUpForm,
   ValidationCode

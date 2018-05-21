@@ -14,12 +14,13 @@ const DriverProfile = ({ driverInfo }) => {
 				 <Image resizemode="contain" style={styles.driverPic} source={{ uri: profilePic }} /> 
 			</View>
 			<View style={styles.ratingContainer}>
+				<Text>{driverInfo.lastName} {driverInfo.firstName} </Text>
 				<StarRating
 					starSize={20}
 					disabled={true}
 					maxStars={5}
 					rating={rating}
-					starColor="yellow"
+					starColor="#ff8e05"
 				/>
 			</View>
 			<View style={styles.iconContainer} />

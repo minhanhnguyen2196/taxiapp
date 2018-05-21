@@ -2,17 +2,19 @@ import React from 'react';
 import { View, StyleSheet, BackHandler } from 'react-native';
 import { Container } from 'native-base';
 import { connect } from 'react-redux';
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import LocationServicesDialogBox from 'react-native-android-location-services-dialog-box';
 import HeaderComponent from '../Header/Header';
 import PlacePickerBox from '../PlacePickerBox/PlacePickerBox';
 
-import { getCurrentLocation } from '../../redux/actionCreators';
+import { getCurrentLocation, getNearbyDrivers } from '../../redux/actionCreators';
+
+const carMarker = require('../../assets/img/carMarker.png');
 
 class InitialScreen extends React.PureComponent {
 	constructor(props) {
-		super(props);
-		BackHandler.addEventListener('hardwareBackPress', this.onBackHandle);
+	  super(props);
+	  BackHandler.addEventListener('hardwareBackPress', this.onBackHandle);
 	}
 	componentWillMount() {
 		LocationServicesDialogBox.checkLocationServicesIsEnabled({
@@ -23,28 +25,33 @@ class InitialScreen extends React.PureComponent {
             openLocationServices: true, 
             preventOutSideTouch: true, 
             preventBackClick: true
-        }).then(() => {
+        })
+        .then(() => {
             // success => {alreadyEnabled: true, enabled: true, status: "enabled"} 
            	navigator.geolocation.getCurrentPosition(
 			(position) => {
 				this.props.getCurrentLocation(position);
+				this.props.getNearbyDrivers();
 			},
 			(error) => console.log(JSON.stringify(error)),
-			{ enableHighAccuracy: true, timeout: 20000 }
+			{ enableHighAccuracy: false, timeout: 20000 }
 			);
-        }).catch((error) => {
+        })
+        .catch((error) => {
             console.log(error.message);
-        });
+        });    
 	}
 
+	componentWillUnmount() {
+		BackHandler.removeEventListener('hardwareBackPress', this.onBackHandle);
+	}
 	onBackHandle = () => {
 		BackHandler.exitApp();
 		return true;
 	}
 
-
 	render() {
-		const { region } = this.props;
+		const { region, nearbyDrivers } = this.props;
 		return (
 		<Container>
 			<View style={{ flex: 1 }}>
@@ -53,7 +60,22 @@ class InitialScreen extends React.PureComponent {
 				<MapView
 					style={styles.map}
 					region={region}
-				/>
+				>
+				{
+				(nearbyDrivers) ? 
+					nearbyDrivers.map((marker, index) => 
+					<Marker 
+						image={carMarker}
+						coordinate={{ 
+							latitude: marker.coordinate.coordinates[1], 
+							longitude: marker.coordinate.coordinates[0] 
+						}}
+						key={index}
+					/>
+				) : null
+				}
+
+				</MapView>
 				</View>
 				{
 					(region.latitude !== 0) && <PlacePickerBox navigation={this.props.navigation} /> 
@@ -69,12 +91,13 @@ class InitialScreen extends React.PureComponent {
 
 function mapStateToProps(state) {
 	return { 
-		region: state.location, 
+		region: state.location,
+		nearbyDrivers: state.nearbyDriver
 	};
 }
 
 export default connect(mapStateToProps, { 
-	getCurrentLocation, 
+	getCurrentLocation, getNearbyDrivers
 	})(InitialScreen);
 
 

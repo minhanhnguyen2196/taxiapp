@@ -5,7 +5,8 @@ import {
   StyleSheet,
   AsyncStorage,
   View,
-  Image
+  Image,
+  ImageBackground
 } from 'react-native';
 import { connect } from 'react-redux';
 import getAccessToken from './getAccessToken';
@@ -13,6 +14,7 @@ import checkLogin from './checkLogin';
 
 import { getUserInfo } from '../../redux/actionCreators';
 
+const background = require('../.././assets/img/background.jpg');
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 class AuthLoadingScreen extends React.Component {
@@ -39,11 +41,9 @@ class AuthLoadingScreen extends React.Component {
   };
   render() {
     return (
-      <View style={styles.container}>
-        <Image source={require('../../assets/img/react_icon.png')} />
-        <ActivityIndicator />
-        <StatusBar barStyle="default" />
-      </View>
+      <ImageBackground source={background} style={styles.container}>
+        <ActivityIndicator size="large" color='white' />
+      </ImageBackground>
     );
   }
 }
@@ -53,7 +53,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#34495e'
 	},
   backgroundImage: {
     

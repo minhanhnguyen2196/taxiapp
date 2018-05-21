@@ -1,5 +1,5 @@
 import React from 'react';
-import { KeyboardAvoidingView, View, Text } from 'react-native';
+import { KeyboardAvoidingView, View, Image } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { connect } from 'react-redux';
 import MapViewDirections from 'react-native-maps-directions';
@@ -7,27 +7,95 @@ import { SearchBox } from '../SearchBox/SearchBox';
 import SearchResult from '../SearchResult/SearchResult';
 import styles from './styles';
 
-import { getInput, toggleSearchResult, getAddressPrediction, 
-		getNearbyDrivers, setCurrentAddress, clearStates, calculateFares
-	} 
-		from '../../redux/actionCreators';
+import { 
+	getInput, 
+	toggleSearchResult, 
+	getAddressPrediction, 
+	getNearbyDrivers, 
+	setCurrentAddress, 
+	clearStates, 
+	calculateFares, 
+	getCurrentLocation, 
+	selectAddressByMarker
+	} from '../../redux/actionCreators';
 
 const carMarker = require('../../assets/img/carMarker.png');
+const marker = require('../../assets/img/map-pin.png');
 
 class MapContainer extends React.PureComponent {
+	constructor(props) {
+	super(props);
+	this.state = { 
+	initialRegion: {
+		latitude: this.props.region.latitude,
+		longitude: this.props.region.longitude,
+		latitudeDelta: 0.01,
+		longitudeDelta: 0.01
+	}
+	};
+	}
 
-	componentDidUpdate(prevProps, prevState) {
-		this.showMarker();
+	componentDidMount() {
+		this.watchID = navigator.geolocation.watchPosition((position) => {
+			this.props.getCurrentLocation(position);
+		}, (error) => console.log(JSON.stringify(error)), 
+		);
+		this._onRegionChangeComplete = this._onRegionChangeComplete.bind(this);
+		
 	}
 	
+	componentWillReceiveProps(nextProps) {
+		const { selectedAddress, resultTypes } = this.props;
+		const { initialRegion } = this.state;
+		const { latitudeDelta, longitudeDelta } = initialRegion;
+		const { resultType } = resultTypes;
+		if (selectedAddress !== nextProps.selectedAddress && (resultType.pickUp || resultType.dropOff)
+			&& Object.keys(nextProps.selectedAddress.selectedPickUp).length > 0) {
+			this.setState({ 
+			initialRegion: {
+				latitude: nextProps.selectedAddress.selectedPickUp.latitude,
+				longitude: nextProps.selectedAddress.selectedPickUp.longitude,
+				latitudeDelta,
+				longitudeDelta
+			} 
+			});
+		}
+	}
+	componentDidUpdate(prevProps, prevState) {
+		this.showMarker();	
+	}
+	
+	componentWillUnmount() {
+		navigator.geolocation.clearWatch(this.watchID);
+	}
+
 	showMarker = () => {
-	if (this.props.selectedAddress.selectedPickUp.latitude || this.props.selectedAddress.selectedDropOff.latitude) {
+		const { selectedAddress } = this.props;
+		const { selectedPickUp, selectedDropOff } = selectedAddress;
+		if (selectedPickUp.latitude || selectedDropOff.latitude) {
 		this.refs.marker.showCallout();
 	}
 	}
+
+	_onRegionChangeComplete = (region) => {
+		const { resultTypes, fare } = this.props;
+		const { fakeMarker } = resultTypes;
+		if (!fare.economyTotalFare) {
+			if (fakeMarker.pickUp) {
+			this.props.selectAddressByMarker(region, true);
+			this.setState({ initialRegion: region });	
+		} else if (fakeMarker.dropOff) {
+			this.props.selectAddressByMarker(region, false);
+			this.setState({ initialRegion: region });	
+		}
+		}	
+	}
+
 	render() {
+	const { initialRegion } = this.state;
 	const { region, resultTypes, selectedAddress, nearbyDriver, fare } = this.props;
 	const { selectedPickUp, selectedDropOff } = selectedAddress;
+	const { fakeMarker, resultType } = resultTypes;
 
 	const origin = { 
 		latitude: selectedPickUp.latitude, 
@@ -39,19 +107,27 @@ class MapContainer extends React.PureComponent {
 		longitude: selectedDropOff.longitude 
 	};
 
-	const lat = (selectedDropOff.latitude + selectedPickUp.latitude) / 2 || 0;
-	const long = (selectedDropOff.longitude + selectedPickUp.longitude) / 2 || 0;
 	const GOOGLE_MAPS_APIKEY = 'AIzaSyB0MeIPhayVTnc0MOJqk0Cw6f3YIkPh2O0';
-
 	return (
 		<KeyboardAvoidingView style={styles.container}>
 			<MapView
 				style={styles.map}
-				region={region}
+				region={initialRegion}
 				ref="map"
+				onRegionChangeComplete={this._onRegionChangeComplete}
 			>
+			<Marker 
+				coordinate={{
+					latitude: region.latitude,
+					longitude: region.longitude
+				}}
+				pinColor='green'
+				title='Your Location'
+				ref="marker"
+				
+			/>
 			{
-				selectedPickUp.latitude && 
+				selectedPickUp.latitude && fare.economyTotalFare &&
 				<Marker 
 					coordinate={{
 						latitude: selectedPickUp.latitude,
@@ -63,9 +139,10 @@ class MapContainer extends React.PureComponent {
 					
 				/>
 			}
-
+				
+			
 			{
-				selectedDropOff.latitude && 
+				selectedDropOff.latitude && fare.economyTotalFare &&
 				<Marker 
 					coordinate={{
 						latitude: selectedDropOff.latitude,
@@ -92,7 +169,7 @@ class MapContainer extends React.PureComponent {
 				) : null
 			}
 			{
-				(selectedPickUp.latitude && selectedDropOff.latitude) && 
+				(selectedPickUp.latitude && selectedDropOff.latitude && fare.economyTotalFare) && 
 				<MapViewDirections
 					origin={origin}
 					destination={destination}
@@ -104,25 +181,13 @@ class MapContainer extends React.PureComponent {
 
 			}
 
-			{
-				(selectedPickUp.latitude && selectedDropOff.latitude) && 
-				<Marker 
-					coordinate={{
-						latitude: lat,
-						longitude: long
-					}}
-					ref="marker"
-				>
-				<View style={styles.talkBubble}>
-		        	<View style={styles.talkBubbleSquare}>
-		        		<Text style={{ fontSize: 15, fontWeight: 'bold', color: 'black' }}> 15 min </Text>
-		        	</View>
-		        	<View style={styles.talkBubbleTriangle} />
-		      	</View>
-				</Marker>
-			}
-
 			</MapView>
+			{
+				(fakeMarker.pickUp || fakeMarker.dropOff) && !fare.economyTotalFare &&
+				<View pointerEvents="none" style={{ justifyContent: 'center', position: 'absolute' }}>
+						<Image source={marker} />
+				</View>
+			}
 			
 			{
 				!(selectedPickUp.latitude && selectedDropOff.latitude && fare.economyTotalFare) && 
@@ -135,7 +200,7 @@ class MapContainer extends React.PureComponent {
 				/>
 			}	
 			
-			{ (resultTypes.resultType.pickUp || resultTypes.resultType.dropOff) &&
+			{ (resultType.pickUp || resultType.dropOff) &&
 			<SearchResult 
 				prediction={this.props.prediction}
 			/>
@@ -160,12 +225,27 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, { 
 	getInput, 
+	getCurrentLocation,
 	toggleSearchResult, 
 	getAddressPrediction,
 	getNearbyDrivers,
 	setCurrentAddress,
 	clearStates,
-	calculateFares
+	calculateFares,
+	selectAddressByMarker
 	})(MapContainer);
 
 
+// <Marker 
+// 					coordinate={{
+// 						latitude: region.latitude,
+// 						longitude: region.longitude
+// 					}}
+// 				>
+// 				<View style={styles.talkBubble}>
+// 		        	<View style={styles.talkBubbleSquare}>
+// 		        		<Text style={{ fontSize: 13, fontWeight: 'bold', color: 'black' }}>Your Location </Text>
+// 		        	</View>
+// 		        	<View style={styles.talkBubbleTriangle} />
+// 		      	</View>
+// 				</Marker>

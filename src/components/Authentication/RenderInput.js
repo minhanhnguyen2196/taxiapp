@@ -10,19 +10,18 @@ export default class RenderInput extends React.Component {
 		<View>
 			<Animatable.View
 				animation='zoomIn' iterationCount={1}
-				style={{ alignItems: 'center', justifyContent: 'center', padding: 5 }}
+				style={{ alignItems: 'center', justifyContent: 'center' }}
 			>
 				<TextInput
 					style={styles.input}
 					keyboardType={keyboardType}
-					underlineColorAndroid='transparent'
 					secureTextEntry={secureTextEntry}
 					returnKeyLabel={returnKeyLabel}
 					ref={refField}
 					onSubmitEditing={onSubmit}
 					onChangeText={onChange} {...resInput}
 					placeholder={placeholder}
-					placeholderTextColor='white'
+					placeholderTextColor='black'
 				/>
 			</Animatable.View>
 			{
@@ -39,16 +38,12 @@ export default class RenderInput extends React.Component {
 
 const styles = StyleSheet.create({
 	input: {
-		borderColor: 'white',  
+		borderColor: 'black',  
 		height: 50, 
 		width: 300, 
-		paddingHorizontal: 20,
-		backgroundColor: '#34495e',
 		marginVertical: 10,
-		borderRadius: 20,
-		borderWidth: 2,
 		fontWeight: 'bold',
-		color: '#fff',
+		color: 'black',
 		fontSize: 16,
 	}
 });

@@ -32,12 +32,12 @@ router.post('/bookings', (req, res) => {
         	$and: [
             { 
               coordinate: {
-              $near: {
+              	$near: {
                   $geometry: {
                       type: 'Point',
                       coordinates: [parseFloat(longitude), parseFloat(latitude)]
                   },
-                  $maxDistance: 10000
+                  $maxDistance: 3000
               }
               } 
             },
@@ -118,10 +118,13 @@ router.put('/bookings/:id', (req, res) => {
 								type: 'Point',
 								coordinates: [parseFloat(longitude), parseFloat(latitude)]
 							},
-							$maxDistance: 10000
+							$maxDistance: 3000
 							} } 
 						},
-					{ status: { $eq: 'available' } }
+					{ status: { $eq: 'available' } },
+					{
+						"vehicle.type": { $eq: booking.vehicle }
+					}
 					] }, (errors, driver) => {
 						if (driver) {
 							io.to(driver.socketId).emit('driver request', updatedBooking);
@@ -155,6 +158,23 @@ router.put('/bookings/:id', (req, res) => {
 					});
 					io.to(booking.socketID).emit('leave room', 'Leave room');
 					break;
+				}
+
+				case 'started' :
+				case 'arrived': {
+					io.to(updatedBooking.userSocketID).emit('action', {
+						type: 'UPDATE_BOOKING',
+						payload: updatedBooking
+					});
+					break;
+				}
+				case 'completed': {
+					io.to(updatedBooking.userSocketID).emit('action', {
+					type: 'UPDATE_BOOKING',
+					payload: updatedBooking
+				});
+				io.to(booking.socketID).emit('leave room', 'Leave room');
+				break;	
 				}
 				default: break;
 			}

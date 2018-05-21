@@ -23,21 +23,18 @@ class Home extends React.PureComponent {
 		this.onBackHandle = this.onBackHandle.bind(this);
 		BackHandler.addEventListener('hardwareBackPress', this.onBackHandle);
 	}
-	
-	componentWillReceiveProps(nextProps) {
-		if (this.props.selectedAddress.selectedPickUp !== nextProps.selectedAddress.selectedPickUp 
-			&& Object.keys(nextProps.selectedAddress.selectedPickUp).length > 0) {
-				this.props.getNearbyDrivers();
-			}
-	}
 
 	componentDidUpdate(prevProps, prevState) {
-		console.log(this.props.booking);
+		console.log(this.props.distanceMatrix);
 		if (this.props.booking.status === 'confirmed') {
 			this.props.navigation.navigate('TrackDriverContainer');
 		}
 	}
 
+	componentWillUnmount() {
+		BackHandler.removeEventListener('hardwareBackPress', this.onBackHandle);
+	}
+	
 	onBackHandle = () => {
 		//this.props.toggleSearchResult('off');
 		this.props.clearStates();

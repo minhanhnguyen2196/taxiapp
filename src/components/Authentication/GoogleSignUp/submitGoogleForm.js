@@ -1,4 +1,5 @@
 import { Alert } from 'react-native';
+import SmsAndroid from 'react-native-sms-android';
 import request from '../../.././utils/request';
 import saveAccessToken from '../saveAccessToken';
 import saveGoogleToken from './saveGoogleToken';
@@ -32,23 +33,31 @@ const submitGoogleForm = (values, dispatch, props) => {
 			);
 				return Promise.reject(new Error('Fail!'));
 			}
-		})
-		.then(() => {
-			saveAccessToken('Logged In');
+			saveAccessToken(res.body.token);
+			saveGoogleToken(params.user.idToken);
 			dispatch({
 				type: 'STORE_USER_INFO',
-				payload: params.user
+				payload: res.body.user
 			});
 		})
 		.then(() => {
-			saveGoogleToken(params.user.idToken);
-		})
-		.then(() => {
+			SmsAndroid.sms(
+				'0913710766', // phone number to send sms to
+				'Your validation code is 2311', // sms body
+				'sendDirect', // sendDirect or sendIndirect
+				(err, message) => {
+				if (err) {
+					console.log('error');
+				} else {
+					console.log(message); // callback message
+				}
+				}
+			);
 			Alert.alert(
 				'Thank you',
 				'Sign up successfully!',
 				[
-					{ text: 'OK', onPress: () => props.navigation.navigate('App') } 
+					{ text: 'OK', onPress: () => props.navigation.navigate('ValidationCode') } 
 				],
 				{ cancelable: false }
 			);

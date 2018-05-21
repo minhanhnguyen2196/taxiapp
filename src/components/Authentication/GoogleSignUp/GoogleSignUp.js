@@ -1,13 +1,16 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, Image } from 'react-native';
 import { View, Icon } from 'native-base';
 import { connect } from 'react-redux';
 import * as Animatable from 'react-native-animatable';
-import { GoogleSignin, GoogleSigninButton } from 'react-native-google-signin';
+import { GoogleSignin } from 'react-native-google-signin';
 import getGoogleToken from './getGoogleToken';
 import saveAccessToken from '../saveAccessToken';
 
 import { getUserInfo } from '../../../redux/actionCreators';
+
+const fb = require('../../../assets/img/fb.png');
+const gg = require('../../../assets/img/google.png');
 
 class GoogleSignUp extends React.Component {
 	constructor(props) {
@@ -55,14 +58,19 @@ class GoogleSignUp extends React.Component {
 			<View style={styles.txtWrapperStyle}> 
 				<Text style={styles.txtStyle}>Choose your account</Text>
 			</View>
-			<View style={{ padding: 20, flexDirection: 'row' }}>
-				<GoogleSigninButton
-					style={{ width: 60, height: 60 }}
-					size={GoogleSigninButton.Size.Icon}
-					color={GoogleSigninButton.Color.Dark}
-					onPress={() => this.handleSignIn()}
+			<View style={{ padding: 20 }}>
+				<TouchableOpacity style={{ margin: 20, marginBottom: 0 }}>
+				<Image 
+					source={gg}
+					style={{ width: 312, height: 48 }}
 				/>
-				<Text style={styles.txtGoogleStyle}> Google </Text>
+				</TouchableOpacity>
+				<TouchableOpacity style={{ margin: 20 }}>
+				<Image 
+					source={fb}
+					style={{ width: 312, height: 48 }}
+				/>
+				</TouchableOpacity>
 			</View>
 		</View>
 	);

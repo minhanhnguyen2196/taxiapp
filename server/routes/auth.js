@@ -10,7 +10,7 @@ router.post('/auth', (req, res) => {
 			res.json({ error: 'Failed to authenticate token.' });    
 		} else {
 			// if everything is good
-			res.json(decoded);  
+			res.json(decoded); 
 		}
 		});
 	} else {

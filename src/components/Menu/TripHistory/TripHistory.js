@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Icon as BackIcon } from 'native-base';
 import * as Animatable from 'react-native-animatable';
+
+const { width } = Dimensions.get('window');
 
 export default class TripHistory extends React.PureComponent {
 	render() {
@@ -20,19 +22,70 @@ export default class TripHistory extends React.PureComponent {
 					<Text style={{ color: '#fff', fontSize: 20, padding: 20 }}> Trip History </Text>
 				</View>
 				<View style={{ margin: 20 }} >
-					<TouchableOpacity>
+					<TouchableOpacity style={{ width }}>
 						<View style={{ flexDirection: 'row' }}>
-							<Text> Yesterday at 10:22 PM </Text>
-							<Text> 0 VND </Text>
+							<Text style={{ color: 'black', fontSize: 16 }}> Yesterday at 10:22 PM </Text>
+							<Text style={{ textAlign: 'right', marginHorizontal: 100 }}> 0 VND </Text>
 						</View>
-						<Text> Huyndai Grand i10 </Text>
-						<View style={{ flexDirection: 'row' }}>
-							<Text> Pay with cash </Text>
+						<View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
+							<Text> Huyndai Grand i10 </Text>
+							<Text style={{ paddingHorizontal: 20 }}> Pay with cash </Text>
 							<Text> Canceled</Text>
 						</View>
-						<Text> Detail </Text>
 					</TouchableOpacity>
 				</View>
+				<View
+					style={{
+					borderBottomWidth: StyleSheet.hairlineWidth,
+					borderBottomColor: 'black',
+					width,
+					marginTop: 5
+					}}
+				/>
+
+				<View style={{ margin: 20 }} >
+					<TouchableOpacity style={{ width }}>
+						<View style={{ flexDirection: 'row' }}>
+							<Text style={{ color: 'black', fontSize: 16 }}> Friday at 9:20 AM </Text>
+							<Text style={{ textAlign: 'right', marginHorizontal: 100 }}> 50.000 VND </Text>
+						</View>
+						<View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
+							<Text> Huyndai Grand i30 </Text>
+							<Text style={{ paddingHorizontal: 20 }}> Pay with cash </Text>
+							<Text> Completed</Text>
+						</View>
+					</TouchableOpacity>
+				</View>
+				<View
+					style={{
+					borderBottomWidth: StyleSheet.hairlineWidth,
+					borderBottomColor: 'black',
+					width,
+					marginTop: 5
+					}}
+				/>
+
+				<View style={{ margin: 20 }} >
+					<TouchableOpacity style={{ width }}>
+						<View style={{ flexDirection: 'row' }}>
+							<Text style={{ color: 'black', fontSize: 16 }}> Monday at 1:22 PM </Text>
+							<Text style={{ textAlign: 'right', marginHorizontal: 100 }}> 20.000 VND </Text>
+						</View>
+						<View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
+							<Text> Huyndai Grand i10 </Text>
+							<Text style={{ paddingHorizontal: 20 }}> Pay with cash </Text>
+							<Text> Completed</Text>
+						</View>
+					</TouchableOpacity>
+				</View>
+				<View
+					style={{
+					borderBottomWidth: StyleSheet.hairlineWidth,
+					borderBottomColor: 'black',
+					width,
+					marginTop: 5
+					}}
+				/>
 			</View>
 		);
 	}

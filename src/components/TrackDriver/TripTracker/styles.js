@@ -3,13 +3,11 @@ var width = Dimensions.get("window").width; //full width
 const styles = {
     footerContainer:{
         backgroundColor:"#ffffff",
-        height:90,
-        padding:0
+        height:100,
+        padding:5
     },
     iconContainer:{
-        padding:0,
-        marginTop:0,
-        width:width,
+        width,
         alignItems: "center",
     },
     icon:{
@@ -28,9 +26,9 @@ const styles = {
         fontSize:15
     },
     vehicleText:{
-        marginTop:5,
+        marginTop: 10,
         color:"#636363",
-        fontSize:12
+        fontSize:14
     }
 };
 

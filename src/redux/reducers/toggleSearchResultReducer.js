@@ -1,39 +1,95 @@
 const resultTypes = {
 	resultType: {
-			pickUp: null,
-			dropOff: null
+		pickUp: null,
+		dropOff: null
 	},
-	prediction: []
+	fakeMarker: {
+		pickUp: null,
+		dropOff: null
+	}
  };
 const toggleSearchResultReducer = (state = resultTypes, action) => {
-	if (action.payload === 'pickUp') {
-		return {
+	switch (action.payload) {
+		case 'pickUp': {
+			return {
 			resultType: {
 				pickUp: true,
 				dropOff: false
 			},
-			prediction: []
-	};
-}
-	if (action.payload === 'dropOff') {
-		return {
+			fakeMarker: {
+				pickUp: false,
+				dropOff: false
+			}
+			};
+			break;
+		}
+		case 'dropOff': {
+			return {
 			resultType: {
 				pickUp: false,
 				dropOff: true
 			},
-			prediction: []
-	};
-}
-	if (action.payload === 'off') {
+			fakeMarker: {
+				pickUp: false,
+				dropOff: false
+			}		
+			};
+			break;
+		}
+		case 'off': {
+			return {
+			resultType: {
+				pickUp: false,
+				dropOff: false
+			},
+			fakeMarker: {
+				pickUp: false,
+				dropOff: false
+			}			
+			};
+			break;
+		}
+		case 'showFakeMarkerPickUp': {
+			return {
+			resultType: {
+				pickUp: false,
+				dropOff: false
+			},
+			fakeMarker: {
+				pickUp: true,
+				dropOff: false
+			}
+			};
+			break;
+		}
+		case 'showFakeMarkerDropOff': {
+			return {
+			resultType: {
+				pickUp: false,
+				dropOff: false
+			},
+			fakeMarker: {
+				pickUp: false,
+				dropOff: true
+			}
+		};
+		break;
+		}
+		default: break;	
+	}
+	if (action.type === 'CLEAR_STATE') {
 		return {
 			resultType: {
 				pickUp: false,
 				dropOff: false
 			},
-			prediction: []
-	};
-}
- return state; 	
+			fakeMarker: {
+				pickUp: false,
+				dropOff: false
+			}
+		};
+	}
+	return state; 	
 };
 
 export default toggleSearchResultReducer;
