@@ -19,19 +19,19 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 class AuthLoadingScreen extends React.Component {
   componentDidMount() {
-	sleep(1000)
-	.then(() => getAccessToken())
-	.then((token) => checkLogin(token))
-  .then((res) => {
-    if (res.error) {
-      this.props.navigation.navigate('Auth');
-    } else {
-      this.props.getUserInfo(res);
-      this.props.navigation.navigate('App');
-    }
-  })
-  .catch(err => console.log(err));
-	//this._signOutAsync();
+    sleep(1000)
+      .then(() => getAccessToken())
+      .then((token) => checkLogin(token))
+      .then((res) => {
+        if (res.error) {
+          this.props.navigation.navigate('Auth');
+        } else {
+          this.props.getUserInfo(res);
+          this.props.navigation.navigate('App');
+        }
+      })
+      .catch(err => console.log(err));
+    //this._signOutAsync();
   }
 
   _signOutAsync = async () => {
@@ -49,18 +49,18 @@ class AuthLoadingScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
-	container: {
+  container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-	},
+  },
   backgroundImage: {
-    
+
   }
 });
 
 function mapStateToProps(state) {
-  return { 
+  return {
     userInfo: state.userInfo
   };
 }

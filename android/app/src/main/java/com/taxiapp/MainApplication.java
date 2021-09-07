@@ -3,7 +3,7 @@ package com.taxiapp;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
-import com.jamesisaac.rnbackgroundtask.BackgroundTaskPackage;
+import com.wix.interactable.Interactable;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import br.com.dopaminamob.gpsstate.GPSStatePackage;
 import com.showlocationservicesdialogbox.LocationServicesDialogBoxPackage;
@@ -36,7 +36,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new BackgroundTaskPackage(),
+            new Interactable(),
           new ReactNativePushNotificationPackage(),
           new GPSStatePackage(),
           new LocationServicesDialogBoxPackage(),
@@ -65,6 +65,5 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
-    BackgroundTaskPackage.useContext(this);
   }
 }

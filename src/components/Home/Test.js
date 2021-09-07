@@ -1,60 +1,34 @@
-import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  Dimensions,
-  TouchableOpacity, AppState
-} from 'react-native';
-import PushNotification from 'react-native-push-notification';
-
-const screen = Dimensions.get('window');
+import React, { Component } from 'react';
+import {Text, TouchableHighlight, View } from 'react-native';
+import { phonecall } from 'react-native-communications';
+import RNGooglePlaces from 'react-native-google-places';
 
 
-class Test extends React.Component {
-
-constructor(props) {
-  super(props);
-
-  this.handle = this.handle.bind(this);
-}
-componentDidMount() {
-  AppState.addEventListener('change', this.handle);
-  PushNotification.configure({
-    onNotification: (notification) => {
-        console.log('NOTIFICATION:', notification);
-    },
-  });
-}
-componentWillUnmount() {
-  AppState.removeEventListener('change', this.handle);
-}
-
-handle(appState) {
-  if (appState === 'background') {
-    PushNotification.localNotificationSchedule({
-      message: "My Notification Message", 
-      date: new Date(Date.now() + (2 * 1000)) 
-    });
+export default class ModalExample extends Component {
+	constructor(props) {
+	  super(props);
+	
+	  this.openSearchModal = this.openSearchModal.bind(this);
+	}
+	openSearchModal() {
+    RNGooglePlaces.openPlacePickerModal()
+    .then((place) => {
+		console.log(place);
+		// place represents user's selection from the
+		// suggestions and it is a simplified Google Place object.
+    })
+    .catch(error => console.log(error.message));  // error is a Javascript Error object
   }
-}
+
   render() {
     return (
-      <View style={styles.container}>
-        <Text> Hello World </Text>
+      <View style={{ marginTop: 22, backgroundColor: 'blue' }}>
+        <TouchableHighlight onPress={() => this.openSearchModal()}>
+          <View>
+            <Text>Make phonecall</Text>
+          </View>
+        </TouchableHighlight>
       </View>
     );
   }
 }
-
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
- 
-});
-
-export default Test;

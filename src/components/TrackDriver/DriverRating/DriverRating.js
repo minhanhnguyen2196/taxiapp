@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import StarRating from 'react-native-star-rating';
 
 export default class DriverRating extends React.PureComponent {
@@ -17,7 +17,7 @@ export default class DriverRating extends React.PureComponent {
 
 	render() {
 		return (
-			<View style={{ flex: 1, alignItems:'center', justifyContent: 'center', margin: 10 }}>
+			<KeyboardAvoidingView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', margin: 10 }}>
 				<Text style={{ fontSize: 16 }}> Rate your trip with Minh Anh Nguyen </Text>
 				<StarRating
 					starSize={30}
@@ -28,19 +28,22 @@ export default class DriverRating extends React.PureComponent {
         			fullStarColor={'red'}
         			starStyle={{ padding: 5 }}
 				/>
-				<View style={{ justifyContent: 'center'  }}>
+				<View style={{ justifyContent: 'center' }}>
 				<TextInput
-					style={{ fontSize: 16, width: 300, height: 100  }}
+					style={{ fontSize: 16, width: 300, height: 100 }}
 					placeholder="Please write your feedback. Your opinion is important to us"
 					multiline={true}
 				/>
 				</View>
 				<TouchableOpacity 
-		            style={styles.confirmBtn} 
-		        >
-		            <Text style={styles.confirmTxt}> Thank you for your time</Text>
-		        </TouchableOpacity>
-			</View>
+					style={styles.confirmBtn}
+					onPress={() => { 
+					this.props.navigation.goBack();
+					}}
+				>
+					<Text style={styles.confirmTxt}> Thank you for your time</Text>
+				</TouchableOpacity>
+			</KeyboardAvoidingView>
 		);
 	}
 }
@@ -60,6 +63,6 @@ const styles = StyleSheet.create({
       margin: 20,
       width: 300, 
       height: 40, 
-      backgroundColor: 'black', 
+      backgroundColor: '#e67e22', 
   },
 });

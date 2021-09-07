@@ -1,17 +1,22 @@
 import React from 'react';
-import { Text, Image } from 'react-native';
+import { Text, Image, TouchableOpacity } from 'react-native';
 import { View, Button } from 'native-base';
 import StarRating from 'react-native-star-rating';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
+import { phonecall, text } from 'react-native-communications';
 import styles from './styles';
 
+const driver = require('../../../assets/img/driver.png');
+
 const DriverProfile = ({ driverInfo }) => {
-	const { profilePic, rating } = driverInfo;
+	const { rating, phone } = driverInfo;
 	return (
 		<View style={styles.footerContainer}>
 			<View style={styles.imageContainer}>
-				 <Image resizemode="contain" style={styles.driverPic} source={{ uri: profilePic }} /> 
+				<Image 
+					style={styles.driverPic} 
+					source={driver} 
+				/> 
 			</View>
 			<View style={styles.ratingContainer}>
 				<Text>{driverInfo.lastName} {driverInfo.firstName} </Text>
@@ -20,16 +25,21 @@ const DriverProfile = ({ driverInfo }) => {
 					disabled={true}
 					maxStars={5}
 					rating={rating}
-					starColor="#ff8e05"
+					fullStarColor={'yellow'}
 				/>
 			</View>
-			<View style={styles.iconContainer} />
-			<View style={styles.iconContainer}>
+			<TouchableOpacity 
+				style={styles.iconContainer}
+				onPress={() => phonecall(phone, true)}
+			>
 				<Icon name="phone" size={30} style={styles.icon} />
-			</View>
-			<View style={styles.iconContainer}>
+			</TouchableOpacity>
+			<TouchableOpacity
+				onPress={() => text(phone, '')}
+				style={styles.iconContainer}
+			>
 				<Icon name="comment-o" size={30} style={styles.icon} />
-			</View>
+			</TouchableOpacity>
 		</View>
 
 	);

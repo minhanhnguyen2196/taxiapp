@@ -36,7 +36,7 @@ router.post('/register', function (req, res) {
 					phone: savedUser.phone
 				};
 				var token = jwt.sign(user, 'secret', {
-					expiresIn: 60 * 60 
+					expiresIn: 60 * 60 * 24
 				});
 				res.json({ 
 					register: 'Success',

@@ -1,5 +1,5 @@
 const driverLocation = {
-	driverLocation: null,
+	driverLocation: {},
 	showFoundDriver: true,
 	showCarMarker: false
 };
@@ -11,13 +11,19 @@ const getDriverLocationReducer = (state = driverLocation, action) => {
 			showCarMarker: true
 		};
 	}
-	// if (action.type === 'UPDATE_DRIVER_LOCATION') {
-	// 	return {
-	// 		...state, driverLocation: { coordinate: {
-	// 			coordinates: []
-	// 		} },
-	// 	};
-	// }
+	if (action.type === 'CLEAR_STATE') {
+		return {
+			driverLocation: {},
+			showFoundDriver: true,
+			showCarMarker: false
+		};
+	}
+	if (action.type === 'UPDATE_DRIVER_LOCATION') {
+		return {
+			...state, 
+			driverLocation: action.payload
+		};
+	}
  return state; 	
 };
 

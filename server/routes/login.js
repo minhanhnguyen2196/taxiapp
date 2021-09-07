@@ -35,7 +35,7 @@ router.post('/login', function (req, res) {
 					phone: user.phone
 				};
 				var token = jwt.sign(userInfo, 'secret', {
-					expiresIn: 60 * 60 
+					expiresIn: 60 * 60 * 24
 				});
 				res.json({ 
 					login: 'Success',

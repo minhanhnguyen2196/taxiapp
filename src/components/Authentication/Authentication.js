@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, BackHandler } from 'react-native';
 import RegisterForm from './RegisterForm';
 import LoginForm from './LoginForm';
 
@@ -7,14 +7,20 @@ import LoginForm from './LoginForm';
 class Authentication extends React.PureComponent {
 	constructor(props) {
 		super(props);
-		this.state = { toggle: true };
-		this.handleToggleSwitch = this.handleToggleSwitch.bind(this);
+		this.onBackHandle = this.onBackHandle.bind(this);
 	}
 
-	handleToggleSwitch = () => {
-		this.setState({ toggle: !this.state.toggle });
+	
+	componentDidMount() {
+		BackHandler.addEventListener('hardwareBackPress', this.onBackHandle);
 	}
-
+	componentWillUnmount() {
+		BackHandler.removeEventListener('hardwareBackPress', this.onBackHandle);
+	}
+	onBackHandle() {
+		this.props.navigation.goBack();
+		return true;
+	}
 	render() {
 		// const register = (<RegisterForm navigation={this.props.navigation} />);
 		// const login = (<LoginForm navigation={this.props.navigation} />);

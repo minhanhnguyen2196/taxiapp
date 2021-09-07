@@ -1,16 +1,18 @@
 import React from 'react';
-import { View, Dimensions, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import MapView, { Marker, AnimatedRegion } from 'react-native-maps';
 import { connect } from 'react-redux';
 import MapViewDirections from 'react-native-maps-directions';
-//import styles from './styles';
-
-import { getDriverLocation, getDistanceFromDriver, getCurrentLocation } from '../../redux/actionCreators';
+import { 
+	getDriverLocation, 
+	getDistanceFromDriver, 
+	getCurrentLocation,
+	getDistanceToDestination } from '../../redux/actionCreators';
 
 const carMarker = require('../../assets/img/carMarker.png');
-const { width, height } = Dimensions.get('window');
+//console.disableYellowBox = true;
 
-class MapTrack extends React.Component {
+class MapTrack extends React.PureComponent {
 	constructor(props) {
     super(props);
 
@@ -19,39 +21,57 @@ class MapTrack extends React.Component {
         latitude: this.props.region.latitude,
         longitude: this.props.region.longitude,
       }),
+      rotationAngle: null
     };
-  }
+  	}
 
 	componentDidMount() {
+		//this.refs.marker.showCallout();
 		this.watchID = navigator.geolocation.watchPosition((position) => {
 			this.props.getCurrentLocation(position);
 		}, (error) => console.log(JSON.stringify(error)), 
 		);
-		
 	}
 
-	componentDidUpdate(prevProps, prevState) {
-		//console.log(this.props.driverLocation);
-		if (this.props.driverLocation.driverLocation !== prevProps.driverLocation.driverLocation) {
+	componentWillReceiveProps(nextProps) {
+		if (this.props.driverLocation && 
+			this.props.driverLocation.driverLocation !== nextProps.driverLocation.driverLocation) {
+			if (this.props.booking.status !== 'started') {
+				this.props.getDistanceFromDriver();
+			} else this.props.getDistanceToDestination();
+			const { coordinate } = this.state;
 			const newCoordinate = {
-				latitude: this.props.driverLocation.driverLocation.coordinate.coordinates[1],
-				longitude: this.props.driverLocation.driverLocation.coordinate.coordinates[0]
+				latitude: nextProps.driverLocation.driverLocation.coordinate.coordinates[1],
+				longitude: nextProps.driverLocation.driverLocation.coordinate.coordinates[0]
 			};
-
-			this.props.getDistanceFromDriver();
 			if (this.marker) {
-				this.marker._component.animateMarkerToCoordinate(newCoordinate, 500);
-				this.refs.marker.showCallout();
-				this.marker._component.showCallout();
-			} 
-
+				const newRotationAngle = this.getRotationAngle(
+				this.props.driverLocation.driverLocation,
+				nextProps.driverLocation.driverLocation);
+				this.setState({ rotationAngle: newRotationAngle });
+				this.marker._component.animateMarkerToCoordinate(newCoordinate, 4000);
+				//this.marker._component.showCallout();
+			} else {
+			coordinate.timing(newCoordinate).start();
+			}	
 		}
 	}
-
+	
 	componentWillUnmount() {
 		navigator.geolocation.clearWatch(this.watchID);
 	}
 
+	getRotationAngle = (previousPosition, currentPosition) => {
+		const x1 = previousPosition.coordinate.coordinates[1];
+		const y1 = previousPosition.coordinate.coordinates[0];
+		const x2 = currentPosition.coordinate.coordinates[1];
+		const y2 = currentPosition.coordinate.coordinates[0];
+
+		const xDiff = x2 - x1;
+		const yDiff = y2 - y1;
+		return (Math.atan2(yDiff, xDiff) * 180.0) / Math.PI;
+	};
+	
 	render() {
 	const { region, selectedAddress, driverLocation, booking } = this.props;
 	const { selectedPickUp, selectedDropOff } = selectedAddress;
@@ -76,59 +96,42 @@ class MapTrack extends React.Component {
 			>
 
 			{
-				selectedPickUp.latitude && 
-				<Marker 
+			selectedPickUp.latitude && 
+			<Marker 
+				coordinate={{
+					latitude: selectedPickUp.latitude,
+					longitude: selectedPickUp.longitude
+				}}
+				pinColor='green'
+				title={selectedPickUp.name}
+				ref="marker"
+			/>
+			}
+
+			{
+			selectedDropOff.latitude && 
+			<Marker 
+				coordinate={{
+					latitude: selectedDropOff.latitude,
+					longitude: selectedDropOff.longitude
+				}}
+				pinColor='red'
+				title={selectedDropOff.name}
+				ref="marker"
+			/>
+			}
+
+
+			{
+			driverLocation.showCarMarker && 
+				<Marker.Animated
+					image={carMarker}
 					coordinate={{
-						latitude: selectedPickUp.latitude,
-						longitude: selectedPickUp.longitude
+				
 					}}
-					pinColor='green'
-					title={selectedPickUp.name}
-					ref="marker"
+					ref={marker => { this.marker = marker; }}
+					rotation={this.state.rotationAngle}
 				/>
-			}
-
-			{
-				selectedDropOff.latitude && 
-				<Marker 
-					coordinate={{
-						latitude: selectedDropOff.latitude,
-						longitude: selectedDropOff.longitude
-					}}
-					pinColor='red'
-					title={selectedDropOff.name}
-					ref="marker"
-				/>
-			}
-
-			{
-				selectedDropOff.latitude && 
-				<Marker 
-					coordinate={{
-						latitude: selectedDropOff.latitude,
-						longitude: selectedDropOff.longitude
-					}}
-				>
-				<View style={styles.talkBubble}>
-		        	<View style={styles.talkBubbleSquare}>
-		        		<Text style={{ fontSize: 15, fontWeight: 'bold', color: 'black' }}> 15 min </Text>
-		        	</View>
-		        	<View style={styles.talkBubbleTriangle} />
-		      	</View>
-				</Marker>
-			}
-
-			{
-				driverLocation.showCarMarker && 
-					<Marker.Animated
-						image={carMarker}
-						coordinate={{
-							latitude: this.props.driverLocation.driverLocation.coordinate.coordinates[1],
-							longitude: this.props.driverLocation.driverLocation.coordinate.coordinates[0]
-						}}
-						ref={marker => { this.marker = marker; }}
-						title="Driver Location"
-					/>
 			}
 
 			{
@@ -138,7 +141,7 @@ class MapTrack extends React.Component {
 					destination={destination}
 					apikey={GOOGLE_MAPS_APIKEY}
 					strokeWidth={4}
-					strokeColor="black"
+					strokeColor="#e67e22"
 					mode='driving'
 				/>
           }
@@ -161,7 +164,13 @@ function mapStateToProps(state) {
 	};
 }
 
-export default connect(mapStateToProps, { getDriverLocation, getDistanceFromDriver, getCurrentLocation })(MapTrack);
+export default connect(mapStateToProps, 
+	{ 
+		getDriverLocation, 
+		getDistanceFromDriver, 
+		getCurrentLocation,
+		getDistanceToDestination
+	})(MapTrack);
 
 
 export const styles = StyleSheet.create({
@@ -171,33 +180,4 @@ export const styles = StyleSheet.create({
 	map: {
 		...StyleSheet.absoluteFillObject
 	},
-	talkBubble: {
-    	backgroundColor: 'transparent',
-    	justifyContent: 'center',
-    	alignItems: 'center',
-    	paddingBottom: 50
-  	},
- 	talkBubbleSquare: {
-	    width: 90,
-	    height: 30,
-	    backgroundColor: '#fff',
-	    borderRadius: 10,
-	    justifyContent: 'center',
-    	alignItems: 'center' 
- 	 },
-  	talkBubbleTriangle: {
-	    width: 0,
-	    height: 0,
-	    backgroundColor: 'transparent',
-	    borderStyle: 'solid',
-	    borderLeftWidth: 5,
-	    borderRightWidth: 5,
-	    borderBottomWidth: 10,
-	    borderLeftColor: 'transparent',
-	    borderRightColor: 'transparent',
-	    borderBottomColor: '#fff',
-	      transform: [
-	      {rotate: '180deg'}
-	    ]
-  	}
 });

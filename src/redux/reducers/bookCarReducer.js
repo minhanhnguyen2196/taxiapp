@@ -1,5 +1,5 @@
 const booking = {
-	status: null
+	status: null,
 };
 const bookCarReducer = (state = booking, action) => {
 	if (action.type === 'BOOK_CAR') {
@@ -9,7 +9,9 @@ const bookCarReducer = (state = booking, action) => {
 		return action.payload;
 	}
 	if (action.type === 'CLEAR_STATE') {
-		return { status: null };
+		return { 
+			status: null
+		};
 	}
  return state; 	
 };

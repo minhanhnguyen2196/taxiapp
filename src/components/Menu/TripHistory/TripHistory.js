@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Dimensions } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, Dimensions, BackHandler } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Icon as BackIcon } from 'native-base';
 import * as Animatable from 'react-native-animatable';
@@ -7,6 +7,21 @@ import * as Animatable from 'react-native-animatable';
 const { width } = Dimensions.get('window');
 
 export default class TripHistory extends React.PureComponent {
+	
+	constructor(props) {
+		super(props);
+		BackHandler.addEventListener('hardwareBackPress', this.onBackHandle);
+	}
+
+	componentWillUnmount() {
+		BackHandler.removeEventListener('hardwareBackPress', this.onBackHandle);
+	}
+	onBackHandle = () => {
+    this.props.navigation.goBack();
+    return true;
+	}
+
+
 	render() {
 		return (
 			<View style={{ flex: 1, backgroundColor: '#fff' }}>

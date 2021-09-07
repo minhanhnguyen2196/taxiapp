@@ -9,13 +9,13 @@ import submit from './submitRegister';
 import RenderInput from './RenderInput';
 
 //Validation
-const required = value => value ? undefined : 'Required';
+const required = value => value ? '' : 'Required';
 
 const maxLength = max => value =>
-value && value.length > max ? `Must be ${max} characters or less` : 'undefined';
+value && value.length > max ? `Must be ${max} characters or less` : '';
 
 const minLength = min => value =>
-value && value.length < min ? `Must be ${min} characters or more` : 'undefined';
+value && value.length < min ? `Must be ${min} characters or more` : '';
 
 const email = value =>
 value && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value)
@@ -56,7 +56,7 @@ class RegisterComponent extends React.Component {
 					component={RenderInput}
 					name='username'
 					returnKeyLabel='Next'
-					validate={[required, minLength(6), maxLength(20)]}
+					validate={[required, minLength(4)]}
 					onSubmit={() => this.email.getRenderedComponent().refs.email.focus()}
 					ref={(input) => this.username = input}
 				/>
@@ -87,7 +87,7 @@ class RegisterComponent extends React.Component {
 					name='password'
 					secureTextEntry
 					returnKeyLabel='Next'
-					validate={[required, minLength(5)]}
+					validate={[required]}
 					ref={(input) => this.password = input}
 					onSubmit={() => this.phone.getRenderedComponent().refs.phone.focus()}
 									

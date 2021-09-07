@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, StyleSheet, TouchableOpacity, 
-	KeyboardAvoidingView, Dimensions, View } from 'react-native';
+	KeyboardAvoidingView, Dimensions, View, BackHandler } from 'react-native';
 import { Field, reduxForm } from 'redux-form';
 import { Icon } from 'native-base';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -11,7 +11,21 @@ import RenderInput from './RenderInput';
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 
-class LoginComponent extends React.Component {
+class LoginComponent extends React.PureComponent {
+	constructor(props) {
+		super(props);
+		this.onBackHandle = this.onBackHandle.bind(this);
+	}
+	componentDidMount() {
+		BackHandler.addEventListener('hardwareBackPress', this.onBackHandle);
+	}
+	componentWillUnmount() {
+		BackHandler.removeEventListener('hardwareBackPress', this.onBackHandle);
+	}
+	onBackHandle() {
+		this.props.navigation.goBack();
+		return true;
+	}
 	render() {
 		const { handleSubmit } = this.props;
 		return (

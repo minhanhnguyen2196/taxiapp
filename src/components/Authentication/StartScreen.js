@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image, Dimensions } from 'react-native';
+import * as Animatable from 'react-native-animatable';
 
 const taxi = require('../.././assets/img/taxi-128.png');
 const { width, height } = Dimensions.get('window');
@@ -8,20 +9,28 @@ export default class StartScreen extends React.PureComponent {
 	render() {
 		return (
 			<View style={styles.container}>
-				<View style={{ paddingBottom: 80, justifyContent: 'center', alignItems: 'center' }}>
+				<Animatable.View
+					animation='fadeInDownBig' iterationCount={1} 
+					style={{ paddingBottom: 80, justifyContent: 'center', alignItems: 'center' }}
+				>
 					<Image source={taxi} />
 					<Text style={styles.text}>Taxi App </Text>
-				</View>
-				<View style={{ paddingBottom: 20 }}>
+				</Animatable.View>
+				<Animatable.View
+					animation='fadeInLeft' iterationCount={1}  
+					style={{ paddingBottom: 20 }}
+				>
 				<TouchableOpacity style={styles.btn} onPress={() => this.props.navigation.navigate('LoginForm')}>
 					<Text style={styles.btnText}> Sign In </Text> 
 				</TouchableOpacity>
-				</View>
-				<View>
+				</Animatable.View>
+				<Animatable.View
+					animation='fadeInRight' iterationCount={1} 
+				>
 				<TouchableOpacity style={styles.btn} onPress={() => this.props.navigation.navigate('Authentication')}>
 					<Text style={styles.btnText}> Register </Text> 
 				</TouchableOpacity>
-				</View>
+				</Animatable.View>
 			</View>
 		);
 	}
@@ -32,7 +41,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		alignItems: 'center',
 		justifyContent: 'center',
-		backgroundColor: '#2c3e50'
+		backgroundColor: '#e67e22'
 	},
 	wrapper: {
 		margin: 40,

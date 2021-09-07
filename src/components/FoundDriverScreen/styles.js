@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
         borderRadius: 7,
         borderWidth: 1,
         borderColor: '#fff',
-        backgroundColor: 'black'
+        backgroundColor: '#e67e22'
     },
     cancelBtnText: {
         color: '#fff',

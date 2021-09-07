@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, StyleSheet, BackHandler } from 'react-native';
+import { View, StyleSheet, BackHandler, Alert } from 'react-native';
 import { Container } from 'native-base';
 import { connect } from 'react-redux';
 import MapView, { Marker } from 'react-native-maps';
 import LocationServicesDialogBox from 'react-native-android-location-services-dialog-box';
+import GPSState from 'react-native-gps-state';
 import HeaderComponent from '../Header/Header';
 import PlacePickerBox from '../PlacePickerBox/PlacePickerBox';
 
@@ -12,15 +13,11 @@ import { getCurrentLocation, getNearbyDrivers } from '../../redux/actionCreators
 const carMarker = require('../../assets/img/carMarker.png');
 
 class InitialScreen extends React.PureComponent {
-	constructor(props) {
-	  super(props);
-	  BackHandler.addEventListener('hardwareBackPress', this.onBackHandle);
-	}
 	componentWillMount() {
 		LocationServicesDialogBox.checkLocationServicesIsEnabled({
             message: 'This application requires activated GPS to work correctly, turn on GPS now?',
             cancel: 'NO',
-            ok: 'YES',
+            ok: 'Go to Settings',
             showDialog: true, 
             openLocationServices: true, 
             preventOutSideTouch: true, 
@@ -39,13 +36,43 @@ class InitialScreen extends React.PureComponent {
         })
         .catch((error) => {
             console.log(error.message);
-        });    
+        });
+
+        GPSState.addListener((status) => {
+		switch (status) {
+
+			case GPSState.RESTRICTED:
+			Alert.alert(
+				'',
+				'GPS turned off. Turn on now?',
+				[
+					{ text: 'Open Settings', onPress: () => GPSState.openSettings() }  
+				],
+				{ cancelable: false }
+			);
+			break;
+
+			case GPSState.AUTHORIZED_ALWAYS:
+				//TODO do something amazing with you app
+			break;
+
+			case GPSState.AUTHORIZED_WHENINUSE:
+				//TODO do something amazing with you app
+			break;
+
+			default: break;
+		}
+		});
 	}
 
+	componentDidMount() {
+		BackHandler.addEventListener('hardwareBackPress', this.onBackHandle);
+	}
 	componentWillUnmount() {
 		BackHandler.removeEventListener('hardwareBackPress', this.onBackHandle);
+		GPSState.removeListener();
 	}
-	onBackHandle = () => {
+	onBackHandle() {
 		BackHandler.exitApp();
 		return true;
 	}

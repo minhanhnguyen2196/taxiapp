@@ -44,9 +44,6 @@ router.get('/driverCurrentData', (req, res) => {
                 }
                 } 
             },
-            {
-                status: { $eq: 'available' }
-            }
         ]	
 		}, (err, location) => {
 			if (err) {
@@ -65,7 +62,7 @@ router.get('/driverCurrentData/:id', (req, res) => {
             res.send(err);
         }
         res.send(location);
-        //io.emit('trackDriver', location);
+        io.to(req.params.id).emit('trackDriver', location);
     });
 });
 
@@ -102,6 +99,12 @@ router.put('/driverCurrentLocation/:id', (req, res) => {
                     res.send(error);
                 }
                 res.json(updatedData);
+                if (currentData.userSocketID) {
+                    io.to(currentData.userSocketID).emit('action', {
+                    type: 'UPDATE_DRIVER_LOCATION',
+                    payload: updatedData
+                });
+                }   
             });
         }
     });

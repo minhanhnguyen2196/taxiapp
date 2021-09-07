@@ -13,7 +13,7 @@ router.get('/bookings', (req, res) => {
 		}
 		return res.json(bookings);
 	});
-}); 
+});
 
 // post booking 
 router.post('/bookings', (req, res) => {
@@ -25,29 +25,29 @@ router.post('/bookings', (req, res) => {
 		res.status(400);
 		res.json({
 			error: 'Bad data'
-		});	
+		});
 	} else {
 		db2.driverCurrentData.ensureIndex({ 'coordinate': '2dsphere' });
 		db2.driverCurrentData.findOne({
-        	$and: [
-            { 
-              coordinate: {
-              	$near: {
-                  $geometry: {
-                      type: 'Point',
-                      coordinates: [parseFloat(longitude), parseFloat(latitude)]
-                  },
-                  $maxDistance: 3000
-              }
-              } 
-            },
-            {
-              status: { $eq: 'available' }
-            },
-            {
-            	"vehicle.type": { $eq: booking.vehicle }
-            }
-			]	
+			$and: [
+				{
+					coordinate: {
+						$near: {
+							$geometry: {
+								type: 'Point',
+								coordinates: [parseFloat(longitude), parseFloat(latitude)]
+							},
+							$maxDistance: 3000
+						}
+					}
+				},
+				{
+					status: { $eq: 'available' }
+				},
+				{
+					"vehicle.type": { $eq: booking.vehicle }
+				}
+			]
 		}, (err, driver) => {
 			if (err) {
 				res.json({ error: 'No driver found' });
@@ -57,15 +57,15 @@ router.post('/bookings', (req, res) => {
 					res.json(savedBooking);
 					io.to(driver.socketId).emit('driver request', savedBooking);
 					db2.driverCurrentData.update(
-					{ driverID: driver.driverID }, 
-					{ 
-						$set: {
-							status: 'booked'
-						} 
-					});
+						{ driverID: driver.driverID },
+						{
+							$set: {
+								status: 'booked'
+							}
+						});
 				});
 			} else res.json({ error: 'No driver found' });
-	});
+		});
 	}
 });
 
@@ -76,109 +76,100 @@ router.put('/bookings/:id', (req, res) => {
 	if (!booking.status) {
 		res.status(400);
 		res.json({
-		error: 'Bad Data'
+			error: 'Bad Data'
 		});
-   }
-	db.bookings.update({ _id: mongojs.ObjectId(req.params.id) }, { 
-	$set: { status: booking.status } }, (err, updated) => {
+	}
+	db.bookings.update({ _id: mongojs.ObjectId(req.params.id) }, {
+		$set: { status: booking.status }
+	}, (err, updated) => {
 		if (updated) {
-		// send back updated booking
+			// send back updated booking
 			db.bookings.findOne({ _id: mongojs.ObjectId(req.params.id) }, (error, updatedBooking) => {
 				if (error) {
-				res.send(error);
-			}
-			res.send(updatedBooking);
-			switch (updatedBooking.status) {
-				case 'confirmed': {
-					db.bookings.update(
-						{ _id: mongojs.ObjectId(req.params.id) }, 
-						{ $set: { driver: { socketID: booking.socketID, driverID: booking.driverID } } }, 
-						(errs, updatedDriverToBooking) => {
-							if (updatedDriverToBooking) {
-								db.bookings.findOne({ _id: mongojs.ObjectId(req.params.id) }, (not, docs) => {
-									io.to(updatedBooking.userSocketID).emit('action', {
-										type: 'UPDATE_BOOKING',
-										payload: docs
+					res.send(error);
+				}
+				res.send(updatedBooking);
+				switch (updatedBooking.status) {
+					case 'confirmed': {
+						db.bookings.update(
+							{ _id: mongojs.ObjectId(req.params.id) },
+							{ $set: { driver: { socketID: booking.socketID, driverID: booking.driverID } } },
+							(errs, updatedDriverToBooking) => {
+								if (updatedDriverToBooking) {
+									db.bookings.findOne({ _id: mongojs.ObjectId(req.params.id) }, (not, docs) => {
+										io.to(updatedBooking.userSocketID).emit('action', {
+											type: 'UPDATE_BOOKING',
+											payload: docs
+										});
 									});
-								});
-							}	
-					});
-					break;
-				}
-				case 'pending': {
-					io.to(booking.socketID).emit('leave room', 'Leave room');
-					var longitude = updatedBooking.pickUp.longitude;
-					var latitude = updatedBooking.pickUp.latitude;
-					db2.driverCurrentData.ensureIndex({ 'coordinate': '2dsphere' });
-					db2.driverCurrentData.findOne({
-					$and: [{ 
-						coordinate: {
-							$near: {
-							$geometry: {
-								type: 'Point',
-								coordinates: [parseFloat(longitude), parseFloat(latitude)]
+								}
+							});
+						break;
+					}
+					case 'pending': {
+						io.to(updatedBooking.userSocketID).emit('leave room', 'Leave room');
+						var longitude = updatedBooking.pickUp.longitude;
+						var latitude = updatedBooking.pickUp.latitude;
+						db2.driverCurrentData.ensureIndex({ 'coordinate': '2dsphere' });
+						db2.driverCurrentData.findOne({
+							$and: [{
+								coordinate: {
+									$near: {
+										$geometry: {
+											type: 'Point',
+											coordinates: [parseFloat(longitude), parseFloat(latitude)]
+										},
+										$maxDistance: 3000
+									}
+								}
 							},
-							$maxDistance: 3000
-							} } 
-						},
-					{ status: { $eq: 'available' } },
-					{
-						"vehicle.type": { $eq: booking.vehicle }
+							{ status: { $eq: 'available' } },
+							]
+						}, (errors, driver) => {
+							if (driver) {
+								io.to(driver.socketId).emit('driver request', updatedBooking);
+								db2.driverCurrentData.update(
+									{ driverID: driver.driverID },
+									{
+										$set: {
+											status: 'booked'
+										}
+									});
+								db2.driverCurrentData.update(
+									{ driverID: booking.driverID },
+									{
+										$set: {
+											status: 'not available'
+										}
+									});
+							}
+						});
+						break;
 					}
-					] }, (errors, driver) => {
-						if (driver) {
-							io.to(driver.socketId).emit('driver request', updatedBooking);
-							db2.driverCurrentData.update(
-							{ driverID: driver.driverID }, 
-							{ 
-								$set: {
-									status: 'booked'
-								} 
-							});
-							db2.driverCurrentData.update(
-							{ driverID: booking.driverID }, 
-							{ 
-								$set: {
-									status: 'not available'
-								} 
-							});
-						}
-					});
-					break;
-				}
-				case 'cancel': {
-					db.bookings.update({ _id: mongojs.ObjectId(req.params.id) }, {
-					$set: {
-						driver: { socketID: booking.socketID, driverID: booking.driverID } 
+					case 'cancel': {
+						io.to(updatedBooking.userSocketID).emit('leave room', 'Leave room');
+						break;
 					}
-					});
-					io.to(updatedBooking.userSocketID).emit('action', {
-						type: 'UPDATE_BOOKING',
-						payload: updatedBooking
-					});
-					io.to(booking.socketID).emit('leave room', 'Leave room');
-					break;
-				}
 
-				case 'started' :
-				case 'arrived': {
-					io.to(updatedBooking.userSocketID).emit('action', {
-						type: 'UPDATE_BOOKING',
-						payload: updatedBooking
-					});
-					break;
+					case 'started': {
+						io.to(updatedBooking.userSocketID).emit('action', {
+							type: 'UPDATE_BOOKING',
+							payload: updatedBooking
+						});
+						io.to(updatedBooking.userSocketID).emit('started', 'started');
+						break;
+					}
+					case 'completed': {
+						io.to(updatedBooking.userSocketID).emit('action', {
+							type: 'UPDATE_BOOKING',
+							payload: updatedBooking
+						});
+						io.to(updatedBooking.userSocketID).emit('leave room', 'Leave room');
+						break;
+					}
+					default: break;
 				}
-				case 'completed': {
-					io.to(updatedBooking.userSocketID).emit('action', {
-					type: 'UPDATE_BOOKING',
-					payload: updatedBooking
-				});
-				io.to(booking.socketID).emit('leave room', 'Leave room');
-				break;	
-				}
-				default: break;
-			}
-		});
+			});
 		}
 	});
 });

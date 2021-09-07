@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet, View, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, View, TouchableOpacity, Dimensions } from 'react-native';
 import { connect } from 'react-redux';
 import { unsetCarType } from '../../redux/actionCreators';
 
@@ -27,6 +27,7 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps, { unsetCarType })(CancelButton); 
+const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     container: {
@@ -46,8 +47,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 10,
         margin: 10,
-        width: 300, 
-        height: 40, 
-        backgroundColor: 'black', 
+        width: width * 0.9, 
+        height: 50,
+        borderRadius: 6,
+        backgroundColor: '#e67e22', 
     }
 });

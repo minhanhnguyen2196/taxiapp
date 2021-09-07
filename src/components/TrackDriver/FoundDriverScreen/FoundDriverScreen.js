@@ -1,30 +1,37 @@
 import React from 'react';
 import { Text, Image } from 'react-native';
 import { View, Button } from 'native-base';
-
+import StarRating from 'react-native-star-rating';
 import styles from './styles';
 
-export const FoundDriverScreen = ({ driverInfo, getDriverLocation }) => {
-	const { profilePic, vehicle } = driverInfo;
-	return (
+const driver = require('../../../assets/img/driver.png');
+
+export default class FoundDriverScreen extends React.Component {
+	render() {
+		const { driverInfo } = this.props;
+		const { vehicle } = driverInfo;
+		return (
 		<View style={styles.findDriverContainer}>
 			<View style={styles.content}>
-				<Text>YAY Driver Found!</Text>
-				<Image resizemode="contain" style={styles.driverPic} source={{ uri: profilePic }} />
+				<Text style={styles.driverFoundText}>Driver Found</Text>
+				<Image resizemode="contain" style={styles.driverPic} source={driver} />
 				<View style={styles.driverInfo}>
-					<Text style={styles.quotationMarkLeft}>""</Text>
 					<View style={styles.driverBio}>
-						<Text style={styles.bioText}>
-							Hi my name is
-						</Text>
 						<Text style={styles.nameText}>
 							{driverInfo.firstName} {driverInfo.lastName}
 						</Text>
 						<Text style={styles.bioText}>
-							and I am 0.2km away.
+							0.2 km away.
 						</Text>
+						<StarRating
+							starStyle={{ padding: 5 }}
+							starSize={30}
+							disabled={true}
+							maxStars={5}
+							rating={5}
+							fullStarColor={'yellow'}
+						/>
 					</View>
-					<Text style={styles.quotationMarkRight}>""</Text>
 				</View>
 				<View style={styles.vehicleDetails}>
 					<Text style={styles.vehicleText}>Vehicle Plate number:</Text>
@@ -32,17 +39,20 @@ export const FoundDriverScreen = ({ driverInfo, getDriverLocation }) => {
 					<Button 
 						style={styles.nextBtn} 
 						onPress={() => {
-						setInterval(() => {
-						 	getDriverLocation();
-						 }, 1000);
-					}}
+							this.props.getDriverLocation();
+						}}
 					>
-						<Text style={styles.nextBtnText}>OK</Text>
+						<Text style={styles.nextBtnText}>NEXT</Text>
 					</Button>
 				</View>
 			</View>
 		</View>
 	);
-};
+	}	
+}
 
-export default FoundDriverScreen;
+
+// var interVal = setInterval(() => {
+// 							if (!driverInfo) { clearInterval(interVal); alert('OK'); }
+						 	
+// 						 }, 1000);

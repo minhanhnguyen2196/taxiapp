@@ -1,7 +1,8 @@
 import React from 'react';
-import {Text, View, StyleSheet, Dimensions } from 'react-native';
+import { Text, View, StyleSheet, Dimensions } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { connect } from 'react-redux';
+import * as Animatable from 'react-native-animatable';
 import BookingButton from '../Button/BookingButton';
 import CancelButton from '../Button/CancelButton';
 
@@ -9,36 +10,41 @@ const { height, width } = Dimensions.get('window');
 
 class EstimatedFareWindow extends React.PureComponent {
   render() {
-    const { distanceMatrix, fare } = this.props;
+    const { distanceMatrix, fare, carType } = this.props;
+    const estimateFare = (carType === 'Economy') ? 
+    fare.economyTotalFare : ((carType === 'Extra') ? fare.extraTotalFare : fare.luxuryTotalFare);
     return (
-      <View style={styles.container}>
+      <Animatable.View
+        animation="slideInUp"
+        style={styles.container}
+      >
         <View style={styles.textWrapper}>
-        <Text style={{ fontSize: 18, color: 'black' }}> ESTIMATED INFO </Text>
-        <View style={styles.line} />
+          <Text style={{ fontSize: 18, color: 'black' }}> ESTIMATED INFO </Text>
         </View>
-        
         <View style={styles.iconWrapper}>
           <View style={{ paddingHorizontal: 20 }}>
             <FontAwesome name='road' style={styles.icon} color='black' />
-            <Text> Distance </Text>
-            <Text style={{ color: 'steelblue' }}> {Math.ceil(distanceMatrix.rows[0].elements[0].distance.value / 1000)} km </Text>
+            <Text style={{ paddingLeft: 5 }}> Distance </Text>
+            <Text style={{ color: 'steelblue', paddingLeft: 5 }}> {Math.ceil(distanceMatrix.rows[0].elements[0].distance.value / 1000)} km </Text>
           </View>
 
           <View style={{ paddingHorizontal: 20 }}>
             <FontAwesome name='clock-o' style={styles.icon} color='black' />
-            <Text> Time </Text>
-            <Text style={{ color: 'steelblue' }}> {Math.ceil(distanceMatrix.rows[0].elements[0].duration.value / 60)} min </Text>
+            <Text style={{ paddingLeft: 5 }}> Time </Text>
+            <Text style={{ color: 'steelblue', paddingLeft: 5 }}> {Math.ceil(distanceMatrix.rows[0].elements[0].duration.value / 60)} min </Text>
           </View>
 
           <View style={{ paddingHorizontal: 30 }}>
             <FontAwesome name='dollar' style={styles.icon} color='black' />
-            <Text> Fare </Text>
-            <Text style={{ color: 'steelblue' }}> {fare.economyTotalFare}.000 VND </Text>
+            <Text style={{ paddingLeft: 5 }}> Fare </Text>
+            <Text style={{ color: 'steelblue', paddingLeft: 5 }}> {estimateFare}.000 VND </Text>
           </View>
         </View>
+        <View style={{ padding: 20 }}>
         <BookingButton />
-        <CancelButton />  
-      </View>
+        <CancelButton /> 
+        </View>
+      </Animatable.View>
     );
   }
 }
@@ -53,10 +59,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center', 
     alignItems: 'center', 
     width, 
-    height: height * 0.6 
+    height: height * 0.45,
+    paddingTop: 20
   },
   textWrapper: {
-    margin: 5, 
     justifyContent: 'center', 
     alignItems: 'center' 
   },
@@ -70,7 +76,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row', 
     justifyContent: 'center', 
     alignItems: 'center',
-    paddingLeft: 10
   }
 
 

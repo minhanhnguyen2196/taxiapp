@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 
 export default class ConfirmButton extends React.Component {
 	render() {
@@ -19,6 +19,7 @@ export default class ConfirmButton extends React.Component {
 
 //{this.props.booking.pickUp.name} //{this.props.booking.dropOff.name}
 
+const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
@@ -27,7 +28,9 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 20, 
         left: 20, 
-        right: 20
+        right: 20,
+        borderRadius: 6,
+        flex: 1,
     },
     confirmTxt: {
         color: 'white', 
@@ -41,8 +44,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 10,
         margin: 20,
-        width: 350, 
-        height: 40, 
-        backgroundColor: 'black', 
+        width: width * 0.9,
+        height: 50,
+        backgroundColor: '#e67e22',
+        borderRadius: 6
     }
 });

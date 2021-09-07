@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, AppState } from 'react-native';
+import { View, AppState, BackHandler } from 'react-native';
 import { connect } from 'react-redux';
 import PushNotification from 'react-native-push-notification';
 import { Container } from 'native-base';
@@ -8,17 +8,26 @@ import MapTrack from './MapTrack';
 import DriverProfile from './DriverProfile/DriverProfile';
 import TripTracker from './TripTracker/TripTracker';
 import DriverRating from './DriverRating/DriverRating';
-import { FoundDriverScreen } from './FoundDriverScreen/FoundDriverScreen';
+import FoundDriverScreen from './FoundDriverScreen/FoundDriverScreen';
 
+import { 
+	getCurrentLocation, 
+	getNearbyDrivers, 
+	getDriverInfo, 
+	getDriverLocation, 
+	getDistanceFromDriver, 
+	updateTripStatus, 
+	clearStates } from '../../redux/actionCreators';
 
-import { getCurrentLocation, getNearbyDrivers, getDriverInfo, 
-		getDriverLocation, getDistanceFromDriver } from '../../redux/actionCreators';
-
-class TrackDriverContainer extends React.Component {
+console.disableYellowBox = true;
+class TrackDriverContainer extends React.PureComponent {
 	constructor(props) {
-	  super(props);
-	
-	  this.handle = this.handle.bind(this);
+		super(props);	
+		this.handle = this.handle.bind(this);
+		this.handleBackButton = this.handleBackButton.bind(this);
+	}
+	componentWillMount() {
+		this.props.getDriverInfo();
 	}
 	componentDidMount() {
 		navigator.geolocation.getCurrentPosition(
@@ -29,43 +38,60 @@ class TrackDriverContainer extends React.Component {
 		{ enableHighAccuracy: false, timeout: 20000 }
 		);
 
-		this.props.getDriverInfo();
 		AppState.addEventListener('change', this.handle);
 		PushNotification.configure({
 		onNotification: (notification) => {
 		console.log('NOTIFICATION:', notification);
 		},
 		});
+		BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
 	}
 
 	componentWillUnmount() {
 		AppState.removeEventListener('change', this.handle);
+		this.props.clearStates();
+		BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
 	}
 
 	handle(appState) {
 	if (appState === 'background' && this.props.distanceFromDriver) {
 		const duration = this.props.distanceFromDriver.rows[0].elements[0].duration.text;
 		PushNotification.localNotificationSchedule({
-			message: "Your driver will be arrived in" + " " + duration, 
+			message: "Your driver has arrived ", 
 			date: new Date(Date.now() + (2 * 1000)) 
 		});
 	}
 	}
 
+	handleBackButton() {
+        return true;
+    }
+
 	render() {
 		const { region, driverInfo, driverLocation, booking, distanceFromDriver } = this.props;
 		return (
 		<Container>
-			<HeaderComponent navigation={this.props.navigation} />
 			{
 				region.latitude &&
 				<MapTrack />
 			}
 			{
-				distanceFromDriver && <TripTracker driverInfo={driverInfo} distanceFromDriver={distanceFromDriver} />
+				distanceFromDriver && booking.status !== 'completed' &&
+				<TripTracker 
+					driverInfo={driverInfo} 
+					distanceFromDriver={distanceFromDriver}
+					clearStates={this.props.clearStates}
+					updateTripStatus={this.props.updateTripStatus}
+					navigation={this.props.navigation}
+					booking={this.props.booking}
+
+				/>
+			}
+			{
+				booking.status !== 'completed' && 
+				<DriverProfile driverInfo={driverInfo} getDriverLocation={this.props.getDriverLocation} />
 			}
 			
-			<DriverProfile driverInfo={driverInfo} getDriverLocation={this.props.getDriverLocation} />
 			{
 				driverLocation.showFoundDriver && 
 					<FoundDriverScreen 
@@ -74,13 +100,16 @@ class TrackDriverContainer extends React.Component {
 					/>
 			}
 			{
-				booking.status === 'completed' && <DriverRating />
+				booking.status === 'completed' && 
+				<DriverRating 
+					clearStates={this.props.clearStates}
+					navigation={this.props.navigation}
+				/>
 			}
 			
 		</Container>
 		);
 	}
-
 }
 
 function mapStateToProps(state) {
@@ -102,19 +131,13 @@ function mapStateToProps(state) {
 	};
 }
 
-export default connect(mapStateToProps, { 
-	getCurrentLocation, getNearbyDrivers, getDriverInfo, getDriverLocation, getDistanceFromDriver
+export default connect(mapStateToProps, 
+{ 
+	getCurrentLocation, 
+	getNearbyDrivers, 
+	getDriverInfo, 
+	getDriverLocation, 
+	getDistanceFromDriver, 
+	updateTripStatus, 
+	clearStates
 	})(TrackDriverContainer);
-
-/* 
-<TripTracker driverInfo={driverInfo} />
-			<DriverProfile driverInfo={driverInfo} getDriverLocation={this.props.getDriverLocation} />
-			{
-				driverLocation.showFoundDriver && 
-					<FoundDriverScreen 
-						driverInfo={driverInfo}
-						getDriverLocation={this.props.getDriverLocation}
-					/>
-			}
-
-*/

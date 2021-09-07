@@ -58,7 +58,8 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         padding: 10,
         backgroundColor: 'white',
-        elevation: 8
+        elevation: 8,
+        left: 10
 	},
     btn: {
         backgroundColor: 'white',

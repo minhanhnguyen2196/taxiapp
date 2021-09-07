@@ -1,19 +1,16 @@
 import React from 'react';
-import { View, BackHandler } from 'react-native';
+import { View, BackHandler, Alert } from 'react-native';
 import { Container } from 'native-base';
 import { connect } from 'react-redux';
+import GPSState from 'react-native-gps-state';
 import MapContainer from '../MapContainer/MapContainer';
 import HeaderComponent from '../Header/Header';
-import BookingButton from '../Button/BookingButton';
-import CancelButton from '../Button/CancelButton';
 import FoundDriverScreen from '../FoundDriverScreen/FoundDriverScreen';
 import RideTypeWindow from '../RideTypeWindow/RideTypeWindow';
 import EstimatedFareWindow from '../RideTypeWindow/EstimatedFareWindow';
 import ConfirmButton from '../Button/ConfirmButton';
-import styles from './styles';
 
-import { getCurrentLocation, getInput, toggleSearchResult, getAddressPrediction, 
-		getNearbyDrivers, setCurrentAddress, clearStates, calculateFares
+import { getCurrentLocation, getNearbyDrivers, setCurrentAddress, clearStates, calculateFares
 	} 
 		from '../../redux/actionCreators';
 
@@ -23,7 +20,34 @@ class Home extends React.PureComponent {
 		this.onBackHandle = this.onBackHandle.bind(this);
 		BackHandler.addEventListener('hardwareBackPress', this.onBackHandle);
 	}
+	
+	componentWillMount() {
+		GPSState.addListener((status) => {
+		switch (status) {
 
+			case GPSState.RESTRICTED:
+			Alert.alert(
+				'',
+				'GPS turned off. Turn on now?',
+				[
+					{ text: 'Open Settings', onPress: () => GPSState.openSettings() }  
+				],
+				{ cancelable: false }
+			);
+			break;
+
+			case GPSState.AUTHORIZED_ALWAYS:
+				//TODO do something amazing with you app
+			break;
+
+			case GPSState.AUTHORIZED_WHENINUSE:
+				//TODO do something amazing with you app
+			break;
+
+			default: break;
+		}
+		});
+	}
 	componentDidUpdate(prevProps, prevState) {
 		console.log(this.props.distanceMatrix);
 		if (this.props.booking.status === 'confirmed') {
@@ -33,6 +57,7 @@ class Home extends React.PureComponent {
 
 	componentWillUnmount() {
 		BackHandler.removeEventListener('hardwareBackPress', this.onBackHandle);
+		GPSState.removeListener();
 	}
 	
 	onBackHandle = () => {
@@ -41,9 +66,9 @@ class Home extends React.PureComponent {
 		this.props.navigation.goBack();
 		return true;
 	}
-
+	
 	render() {
-	const { region, booking, selectedAddress, carType, fare } = this.props;
+	const { booking, selectedAddress, carType, fare } = this.props;
 	const { selectedPickUp, selectedDropOff } = selectedAddress;
 	const { status } = booking || {};
 		return (
@@ -96,25 +121,8 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, { 
 	getCurrentLocation, 
-	getInput, 
-	toggleSearchResult, 
-	getAddressPrediction,
 	getNearbyDrivers,
 	setCurrentAddress,
 	clearStates,
 	calculateFares
 	})(Home);
-
-
-// region={region} 
-// 					getInput={this.props.getInput} 
-// 					toggleSearchResult={this.props.toggleSearchResult}
-// 					getAddressPrediction={this.props.getAddressPrediction}
-// 					resultTypes={this.props.resultTypes}
-// 					prediction={this.props.prediction}
-// 					selectedAddress={this.props.selectedAddress}
-// 					nearbyDriver={this.props.nearbyDriver}
-// 					setCurrentAddress={this.props.setCurrentAddress}
-// 					navigation={this.props.navigation}
-// 					carType={carType}
-// 					getNearbyDrivers={this.props.getNearbyDrivers}

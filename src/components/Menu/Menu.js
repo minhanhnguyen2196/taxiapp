@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, TouchableOpacity, Image, StyleSheet, BackHandler, Dimensions } from 'react-native';
+import { Text, View, TouchableOpacity, Image, StyleSheet, Dimensions } from 'react-native';
 import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import removeAccessToken from '../Authentication/removeToken';
@@ -10,7 +10,6 @@ class Menu extends Component {
   constructor(props) {
     super(props);
     this.signOut = this.signOut.bind(this);
-    BackHandler.addEventListener('hardwareBackPress', this.onBackHandle);
   }
   signOut() {
     removeAccessToken()
@@ -21,9 +20,9 @@ class Menu extends Component {
 	const { userInfo } = this.props;
 	return (
     <View style={styles.container}>
-      <View style={{ backgroundColor: 'black', alignItems: 'center', width }}>
+      <View style={{ backgroundColor: '#e67e22', alignItems: 'center', width }}>
         <Image 
-          source={require('../../assets/img/profile.jpg')} 
+          source={require('../../assets/img/person.png')} 
           style={styles.profile}
         />  
         <View style={{ alignItems: 'center', margin: 10 }}>
@@ -32,59 +31,64 @@ class Menu extends Component {
           </Text>
         </View>
       </View>
-      <View style={{ alignItems: 'center' }}>
-        <View style={{ paddingLeft: 10, margin: 5 }}>
+      <View style={{ alignItems: 'center', width }}>
+        <View style={{ paddingLeft: 10, borderBottomWidth: 0.5 }}>
           <TouchableOpacity
             style={styles.btnSignInStyle}
             onPress={() => { this.props.navigation.navigate('TripHistory'); }}
           >
-            <Icon name='history' style={styles.icon} color='black' />
+            <Icon name='history' style={styles.icon} color='#000000' />
             <Text style={styles.textStyle}>Trip History </Text>
           </TouchableOpacity>
-          <View
-            style={{
-              borderBottomWidth: StyleSheet.hairlineWidth,
-              borderBottomColor: 'black',
-              width,
-              marginTop: 5
-            }}
-          />
+      
         </View>
-          <View style={{ paddingLeft: 10, margin: 10 }}>
+          <View style={{ paddingLeft: 10, borderBottomWidth: 0.5 }}>
             <TouchableOpacity
               style={styles.btnSignInStyle}
               onPress={() => { this.props.navigation.navigate('PaymentScreen'); }}
             >
-              <Icon name='money' style={styles.icon} color='black' />
-              <Text style={styles.textStyle}>Payment Method</Text>
+              <Icon name='money' style={styles.icon} color='#000000' />
+              <Text style={styles.textStyle}>Payment</Text>
             </TouchableOpacity>
-              <View
-                style={{
-                  borderBottomWidth: StyleSheet.hairlineWidth,
-                  borderBottomColor: 'black',
-                  width,
-                  marginTop: 5
-                }}
-              />
           </View>
-          <View style={{ paddingLeft: 10 }}>
+          <View style={{ paddingLeft: 10, borderBottomWidth: 0.5 }}>
+            <TouchableOpacity
+              style={styles.btnSignInStyle}
+              onPress={() => { this.props.navigation.navigate('PaymentScreen'); }}
+            >
+              <Icon name='user-secret' style={styles.icon} color='#000000' />
+              <Text style={styles.textStyle}>Private Driver</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{ paddingLeft: 10, borderBottomWidth: 0.5 }}>
+            <TouchableOpacity
+              style={styles.btnSignInStyle}
+              onPress={() => { this.props.navigation.navigate('PaymentScreen'); }}
+            >
+              <Icon name='bell' style={styles.icon} color='#000000' />
+              <Text style={styles.textStyle}>Notification</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{ paddingLeft: 10, borderBottomWidth: 0.5 }}>
+            <TouchableOpacity
+              style={styles.btnSignInStyle}
+              onPress={() => { this.props.navigation.navigate('PaymentScreen'); }}
+            >
+              <Icon name='question-circle' style={styles.icon} color='#000000' />
+              <Text style={styles.textStyle}>Support</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{ paddingLeft: 10, borderBottomWidth: 0.5 }}>
             <TouchableOpacity
               style={styles.btnSignInStyle}
               onPress={() => this.signOut()}
             >
-              <Icon name='sign-out' style={styles.icon} color='black' />
+              <Icon name='sign-out' style={styles.icon} color='#000000' />
               <Text style={styles.textStyle}>Sign Out</Text>
             </TouchableOpacity>
-            <View
-              style={{
-                borderBottomWidth: StyleSheet.hairlineWidth,
-                borderBottomColor: 'black',
-                width,
-              }}
-            />
           </View>
-      </View>
-      <View style={{ flex: 1, backgroundColor: '#e1e3e8', width }} />
+        </View>
+          <View style={{ flex: 1, backgroundColor: '#e1e3e8', width }} />
     </View> 
     );
 	}   
@@ -109,7 +113,7 @@ const styles = StyleSheet.create({
       height: 100,
       borderRadius: 50,
       marginTop: 20,
-      marginBottom: 20,
+      marginBottom: 10,
       margin: 5
     },
     btnStyle: {
@@ -130,7 +134,7 @@ const styles = StyleSheet.create({
       paddingLeft: 80
     },
     icon: {
-    fontSize: 35,
+    fontSize: 20,
     padding: 10
   },
 

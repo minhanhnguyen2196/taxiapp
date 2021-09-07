@@ -8,68 +8,67 @@ export function getCurrentLocation(position) {
 	return { type: 'GET_CURRENT_LOCATION', position };
 } 
 
-// get text input 
-export function getInput(payload) {
-	return { type: 'GET_INPUT', payload };
-}
-
 // toggle search result 
 export function toggleSearchResult(payload) {
 	return { type: 'TOGGLE_SEARCH_RESULT', payload };
 }
 
-// show address prediction 
-export function getAddressPrediction() {
-	return (dispatch, getState) => {
-		const { resultTypes, inputData } = getState();
-		const userInput = resultTypes.resultType.pickUp ? inputData.pickUp : inputData.dropOff;
-		RNGooglePlaces.getAutocompletePredictions(userInput, {
-				type: 'address',
-				country: 'VN'
-			}
-		)
-		.then((results) => {
-			dispatch({
-				type: 'GET_ADDRESS_PREDICTION',
-				payload: results
-			});
-		})
-		.catch((err) => console.log(err));
-	};
-}
 
 // select address 
-export function getSelectedAddress(placeID) {
+// export function getSelectedAddress(placeID) {
+// 	return (dispatch, getState) => {
+// 		RNGooglePlaces.lookUpPlaceByID(placeID)
+// 		.then((results) => {
+// 			dispatch({
+// 				type: 'GET_SELECTED_ADDRESS',
+// 				payload: results,
+// 				selectedType: getState().resultTypes.resultType.pickUp
+// 			});
+// 		})
+// 		.then(() => {
+// 			if (getState().resultTypes.resultType.pickUp) {
+// 				var position = {
+// 					coords: {
+// 						latitude: getState().selectedAddress.selectedPickUp.latitude,
+// 						longitude: getState().selectedAddress.selectedPickUp.longitude,
+// 					}
+// 				};
+// 				dispatch({
+// 					type: 'GET_CURRENT_LOCATION',
+// 					position
+// 				});
+// 			}
+// 		})
+// 		.then(() => {
+// 			dispatch({
+// 				type: 'TOGGLE_SEARCH_RESULT',
+// 				payload: 'off'
+// 			});
+// 		})
+// 		.catch((err) => console.log(err));
+// 	};
+// }
+
+export function getSelectedAddress(result) {
 	return (dispatch, getState) => {
-		RNGooglePlaces.lookUpPlaceByID(placeID)
-		.then((results) => {
+		dispatch({
+			type: 'GET_SELECTED_ADDRESS',
+			payload: result,
+			selectedType: getState().resultTypes.resultType.pickUp
+		});
+	
+		if (getState().resultTypes.resultType.pickUp) {
+			var position = {
+				coords: {
+					latitude: getState().selectedAddress.selectedPickUp.latitude,
+					longitude: getState().selectedAddress.selectedPickUp.longitude,
+				}
+			};
 			dispatch({
-				type: 'GET_SELECTED_ADDRESS',
-				payload: results,
-				selectedType: getState().resultTypes.resultType.pickUp
+				type: 'GET_CURRENT_LOCATION',
+				position
 			});
-		})
-		.then(() => {
-			if (getState().resultTypes.resultType.pickUp) {
-				var position = {
-					coords: {
-						latitude: getState().selectedAddress.selectedPickUp.latitude,
-						longitude: getState().selectedAddress.selectedPickUp.longitude,
-					}
-				};
-				dispatch({
-					type: 'GET_CURRENT_LOCATION',
-					position
-				});
-			}
-		})
-		.then(() => {
-			dispatch({
-				type: 'TOGGLE_SEARCH_RESULT',
-				payload: 'off'
-			});
-		})
-		.catch((err) => console.log(err));
+		}
 	};
 }
 
@@ -97,11 +96,11 @@ export function calculateFares() {
 		const pickUpLatitude = String(getState().selectedAddress.selectedPickUp.latitude);
 		const pickUpLongtitude = String(getState().selectedAddress.selectedPickUp.longitude);
 		const dropOffLatitude = String(getState().selectedAddress.selectedDropOff.latitude);
-		const dropOffLongtitude = String(getState().selectedAddress.selectedDropOff.longitude);
+		const dropOffLongitude = String(getState().selectedAddress.selectedDropOff.longitude);
 		request.get('https://maps.googleapis.com/maps/api/distancematrix/json')
 		.query({
 			origins: pickUpLatitude.concat(',', pickUpLongtitude),
-			destinations: dropOffLatitude.concat(',', dropOffLongtitude),
+			destinations: dropOffLatitude.concat(',', dropOffLongitude),
 			mode: 'driving',
 			key: 'AIzaSyBkg7xxrfEsZ87t4S1RRVVr4ILI1L88D3c'
 		})
@@ -202,9 +201,7 @@ export function bookCar() {
 
 		var payment = getState().payment;
 		var vehicle = getState().carType;
-		var date = new Date();
-		var bookTime = date.getDate() + '/' + date.getMonth() + 1 + '/' + date.getFullYear() + ' ' + 'at' + ' '
-						+ date.getHours() + ':' +  date.getMinutes();
+		var bookTime = new Date();
 		var booking = {
 			username,
 			userSocketID,
@@ -248,10 +245,12 @@ export function getNearbyDrivers() {
 				token
 			})
 			.finish((err, res) => {
-				dispatch({
+				if (res.body) {
+					dispatch({
 					type: 'GET_NEARBY_DRIVERS',
 					payload: res.body
 				});
+				}
 			});
 		})
 		.catch(err => console.log(err));
@@ -284,28 +283,6 @@ export function setCurrentAddress() {
     };
 }
 
-
-export function selectAddressByMarker(location, type) {
-	return (dispatch, getState) => {
-			const latitude = location.latitude;
-			const longitude = location.longitude;
-			const url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + latitude + ',' + longitude + '&key=AIzaSyCySbsulJzXe-A4EP2NRAGJWCua7p4gaqI';
-			fetch(url)
-			.then(res => res.json())
-			.then(resjson => {
-				RNGooglePlaces.lookUpPlaceByID(resjson.results[0].place_id)
-				.then((result) => {
-					dispatch({
-						type: 'GET_SELECTED_ADDRESS',
-						payload: result,
-						selectedType: type
-					});
-				})
-			.catch((err) => console.log(err));
-			});
-		
-    };
-}
 
 // when finish register/sign in
 export function getUserInfo(payload) {
@@ -363,6 +340,30 @@ export function getDistanceFromDriver() {
 			.query({
 				origins: pickUpLatitude.concat(',', pickUpLongtitude),
 				destinations: driverLatitude.concat(',', driverLongitude),
+				mode: 'driving',
+				key: 'AIzaSyBkg7xxrfEsZ87t4S1RRVVr4ILI1L88D3c'
+			})
+			.finish((err, res) => {
+				dispatch({
+					type: 'GET_DISTANCE_FROM_DRIVER',
+					payload: res.body
+				});
+			});
+		}	
+	};
+}
+
+export function getDistanceToDestination() {
+	return (dispatch, getState) => {
+		const dropOffLatitude = String(getState().selectedAddress.selectedDropOff.latitude);
+		const dropOffLongtitude = String(getState().selectedAddress.selectedDropOff.longitude);
+		const driverLatitude = String(getState().driverLocation.driverLocation.coordinate.coordinates[1]);
+		const driverLongitude = String(getState().driverLocation.driverLocation.coordinate.coordinates[0]);
+		if (getState().driverLocation) {
+			request.get('https://maps.googleapis.com/maps/api/distancematrix/json')
+			.query({
+				origins: driverLatitude.concat(',', driverLongitude),
+				destinations: dropOffLatitude.concat(',', dropOffLongtitude),
 				mode: 'driving',
 				key: 'AIzaSyBkg7xxrfEsZ87t4S1RRVVr4ILI1L88D3c'
 			})

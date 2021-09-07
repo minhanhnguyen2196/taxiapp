@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Text, StyleSheet, TouchableOpacity, View, Dimensions } from 'react-native';
 import { connect } from 'react-redux';
 import { bookCar, updateTripStatus } from '../../redux/actionCreators';
 
@@ -47,6 +47,7 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, { bookCar, updateTripStatus })(BookingButton); 
 
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
@@ -65,8 +66,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 10,
         margin: 10,
-        width: 300, 
-        height: 40, 
-        backgroundColor: 'black', 
+        width: width * 0.9,
+        borderRadius: 6, 
+        height: 50, 
+        backgroundColor: '#e67e22', 
     }
 });
